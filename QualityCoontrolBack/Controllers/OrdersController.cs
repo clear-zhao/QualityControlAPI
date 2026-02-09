@@ -31,6 +31,16 @@ namespace QualityControlAPI.Controllers
             return Ok(order);
         }
 
+        // GET: /api/crimping/orders/by-creator-employee?employeeId=58&includeClosed=true
+        [HttpGet("orders/by-creator-employee")]
+        public async Task<IActionResult> GetOrdersByCreatorEmployeeId(
+            [FromQuery] string employeeId,
+            [FromQuery] bool includeClosed = true)
+        {
+            var list = await _service.GetOrdersByCreatorEmployeeIdAsync(employeeId, includeClosed);
+            return Ok(list);
+        }
+
         // POST: api/orders
         [HttpPost]
         public async Task<ActionResult<ProductionOrder>> Create(ProductionOrder order)
@@ -130,6 +140,21 @@ namespace QualityControlAPI.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("records/{recordId}")]
+        public async Task<IActionResult> DeleteRecord(string recordId)
+        {
+            try
+            {
+                await _service.DeleteRecordAsync(recordId);
+                return Ok(new { message = "删除成功", recordId });
+                // 或者：return NoContent();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
             }
         }
     }

@@ -25,6 +25,14 @@ namespace QualityControlAPI.Controllers
             }
             return Ok(user);
         }
+        // ✅ GET: /api/auth/users
+        // 返回：[{ "id": 1, "name": "管理员" }, ...]
+        [HttpGet("users")]
+        public async Task<IActionResult> GetAllUsersIdAndName()
+        {
+            var list = await _authService.GetAllUserIdAndNamesAsync();
+            return Ok(list);
+        }
     }
 
     public class LoginRequest { public string Username { get; set; } public string Password { get; set; } }

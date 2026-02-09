@@ -154,5 +154,45 @@ namespace QualityControlAPI.Services.Crimping
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<ProductionOrder>> GetOrdersByCreatorEmployeeIdAsync(string employeeId, bool includeClosed = true)
+        {
+            if (string.IsNullOrWhiteSpace(employeeId))
+                return new List<ProductionOrder>();
+
+            var query = _context.Orders
+                .Include(o => o.Records)
+                    .ThenInclude(r => r.Samples)
+                .AsNoTracking()
+                .Where(o => o.CreatorEmployeeId != null && o.CreatorEmployeeId == employeeId);
+
+            if (!includeClosed)
+                query = query.Where(o => !o.IsClosed);
+
+            return await query
+                .OrderByDescending(o => o.CreatedAt)
+                .ToListAsync();
+        }
+
+        // --- 6. 删除检验记录 (Delete Record) ---
+        public async Task DeleteRecordAsync(string recordId)
+        {
+            if (string.IsNullOrWhiteSpace(recordId))
+                throw new ArgumentException("recordId 不能为空");
+
+            var record = await _context.Records
+                .Include(r => r.Samples)
+                .FirstOrDefaultAsync(r => r.Id == recordId);
+
+            if (record == null) return;
+
+            // 如果你的数据库外键是 ON DELETE CASCADE，其实不 Include 也行；
+            // 但 Include 后删除更直观，也兼容没建级联的情况（EF 会一起删 Samples）
+            _context.Records.Remove(record);
+            await _context.SaveChangesAsync();
+        }
+
+
+
     }
 }

@@ -76,6 +76,9 @@ namespace QualityControlAPI.Models
 
         [Column("CreatedAt")] public DateTime CreatedAt { get; set; } = DateTime.Now;
 
+        [Column("CreatorEmployeeId")]
+        public string? CreatorEmployeeId { get; set; }
+
         public List<InspectionRecord> Records { get; set; } = new();
     }
 
@@ -128,5 +131,11 @@ namespace QualityControlAPI.Models
         public int SampleIndex { get; set; }
         public decimal MeasuredForce { get; set; }
         public bool IsPassed { get; set; }
+    }
+
+    public class UserNameDto
+    {
+        public string Id { get; set; }
+        public string Name { get; set; } = "";
     }
 }

@@ -26,6 +26,16 @@
     ]
   },
   {
+    "ContainingType": "QualityControlAPI.Controllers.AuthController",
+    "Method": "GetAllUsersIdAndName",
+    "RelativePath": "api/Auth/users",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "QualityControlAPI.Controllers.ConfigController",
     "Method": "GetStandards",
     "RelativePath": "api/config/standards",
@@ -176,6 +186,27 @@
   },
   {
     "ContainingType": "QualityControlAPI.Controllers.OrdersController",
+    "Method": "CloseOrder",
+    "RelativePath": "api/Orders/{id}/close",
+    "HttpMethod": "PATCH",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "isClosed",
+        "Type": "System.Boolean",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QualityControlAPI.Controllers.OrdersController",
     "Method": "AddRecord",
     "RelativePath": "api/Orders/{orderId}/records",
     "HttpMethod": "POST",
@@ -190,6 +221,43 @@
       {
         "Name": "record",
         "Type": "QualityControlAPI.Models.InspectionRecord",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QualityControlAPI.Controllers.OrdersController",
+    "Method": "GetOrdersByCreatorEmployeeId",
+    "RelativePath": "api/Orders/orders/by-creator-employee",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "employeeId",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "includeClosed",
+        "Type": "System.Boolean",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "QualityControlAPI.Controllers.OrdersController",
+    "Method": "DeleteRecord",
+    "RelativePath": "api/Orders/records/{recordId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "recordId",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],

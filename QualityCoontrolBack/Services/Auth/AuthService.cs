@@ -20,5 +20,18 @@ namespace QualityControlAPI.Services.Auth
                 .FirstOrDefaultAsync(u => u.EmployeeId == username && u.Password == password);
         }
 
+        // ✅ 新增：获取所有用户（Id + Name）
+        public async Task<List<UserNameDto>> GetAllUserIdAndNamesAsync()
+        {
+            return await _context.Users
+                .AsNoTracking()
+                .OrderBy(u => u.Name)
+                .Select(u => new UserNameDto
+                {
+                    Id = u.EmployeeId,
+                    Name = u.Name
+                })
+                .ToListAsync();
+        }
     }
 }
