@@ -2,25 +2,6 @@
   "version": 3,
   "targets": {
     "net9.0": {
-      "Microsoft.AspNetCore.OpenApi/9.0.11": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.OpenApi": "1.6.17"
-        },
-        "compile": {
-          "lib/net9.0/Microsoft.AspNetCore.OpenApi.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/Microsoft.AspNetCore.OpenApi.dll": {
-            "related": ".xml"
-          }
-        },
-        "frameworkReferences": [
-          "Microsoft.AspNetCore.App"
-        ]
-      },
       "Microsoft.EntityFrameworkCore/9.0.0": {
         "type": "package",
         "dependencies": {
@@ -396,22 +377,6 @@
     }
   },
   "libraries": {
-    "Microsoft.AspNetCore.OpenApi/9.0.11": {
-      "sha512": "rTa3lp6B8KM8AESIwLakTT6XaoUBTnjAZq2pRX6zS/BzQy6mOVUgaawRSyM0WHykHdwbfrEAmer3ys2xE4DVtg==",
-      "type": "package",
-      "path": "microsoft.aspnetcore.openapi/9.0.11",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "PACKAGE.md",
-        "THIRD-PARTY-NOTICES.TXT",
-        "lib/net9.0/Microsoft.AspNetCore.OpenApi.dll",
-        "lib/net9.0/Microsoft.AspNetCore.OpenApi.xml",
-        "microsoft.aspnetcore.openapi.9.0.11.nupkg.sha512",
-        "microsoft.aspnetcore.openapi.nuspec"
-      ]
-    },
     "Microsoft.EntityFrameworkCore/9.0.0": {
       "sha512": "wpG+nfnfDAw87R3ovAsUmjr3MZ4tYXf6bFqEPVAIKE6IfPml3DS//iX0DBnf8kWn5ZHSO5oi1m4d/Jf+1LifJQ==",
       "type": "package",
@@ -1262,7 +1227,6 @@
   },
   "projectFileDependencyGroups": {
     "net9.0": [
-      "Microsoft.AspNetCore.OpenApi >= 9.0.11",
       "Pomelo.EntityFrameworkCore.MySql >= 9.0.0",
       "Swashbuckle.AspNetCore >= 10.1.2"
     ]
@@ -1317,10 +1281,6 @@
       "net9.0": {
         "targetAlias": "net9.0",
         "dependencies": {
-          "Microsoft.AspNetCore.OpenApi": {
-            "target": "Package",
-            "version": "[9.0.11, )"
-          },
           "Pomelo.EntityFrameworkCore.MySql": {
             "target": "Package",
             "version": "[9.0.0, )"

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // 确保引用这个
 using QualityControlAPI.Services.Crimping;
 using QualityControlAPI.Models;
 
@@ -16,39 +15,64 @@ namespace QualityControlAPI.Controllers
             _service = service;
         }
 
+        // GET: api/orders
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProductionOrder>>> GetOrders()
+        public async Task<ActionResult<IEnumerable<ProductionOrder>>> GetAll()
         {
             return Ok(await _service.GetOrdersAsync());
         }
 
-        // 必须补充这个方法，否则 CreateOrder 里的 CreatedAtAction 会报错
+        // GET: api/orders/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProductionOrder>> GetOrder(string id)
+        public async Task<ActionResult<ProductionOrder>> GetById(string id)
         {
-            var orders = await _service.GetOrdersAsync();
-            var order = orders.FirstOrDefault(o => o.Id == id);
+            var order = await _service.GetOrderByIdAsync(id);
             if (order == null) return NotFound();
             return Ok(order);
         }
 
+        // POST: api/orders
         [HttpPost]
-        public async Task<ActionResult<ProductionOrder>> CreateOrder(ProductionOrder order)
+        public async Task<ActionResult<ProductionOrder>> Create(ProductionOrder order)
         {
             try
             {
-                // 直接把前端传来的 order 存进去，因为现在字段完全匹配了
-                var createdOrder = await _service.CreateOrderAsync(order);
-                return CreatedAtAction(nameof(GetOrder), new { id = createdOrder.Id }, createdOrder);
+                var result = await _service.CreateOrderAsync(order);
+                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
             }
             catch (Exception ex)
             {
-                // 打印详细错误到控制台，方便你调试
-                Console.WriteLine($"Error creating order: {ex.Message}");
-                return StatusCode(500, new { message = ex.Message });
+                return StatusCode(500, ex.Message);
             }
         }
 
+        // PUT: api/orders/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(string id, ProductionOrder order)
+        {
+            if (id != order.Id) return BadRequest("请求ID不一致");
+            try
+            {
+                await _service.UpdateOrderAsync(order);
+                return NoContent();
+            }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
+
+        // DELETE: api/orders/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                await _service.DeleteOrderAsync(id);
+                return NoContent();
+            }
+            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+        }
+
+        // POST: api/orders/{orderId}/records
         [HttpPost("{orderId}/records")]
         public async Task<IActionResult> AddRecord(string orderId, InspectionRecord record)
         {
@@ -59,7 +83,52 @@ namespace QualityControlAPI.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding record: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // 放在 Controller 命名空间内或单独定义
+
+
+
+        // 在 OrdersController 类中添加接口：
+
+        // PUT: api/orders/records/{recordId}/audit
+        [HttpPut("records/{recordId}/audit")]
+        public async Task<IActionResult> AuditRecord(string recordId, [FromBody] RecordAuditDto auditData)
+        {
+            if (string.IsNullOrEmpty(auditData.AuditorName))
+                return BadRequest("审核人姓名不能为空");
+
+            if (auditData.Status != 1 && auditData.Status != 2)
+                return BadRequest("审核状态无效");
+
+            try
+            {
+                await _service.AuditRecordAsync(recordId, auditData);
+                return Ok(new { message = "审核完成" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"服务器错误: {ex.Message}");
+            }
+        }
+
+        // PATCH: api/orders/{id}/close
+        [HttpPatch("{id}/close")]
+        public async Task<IActionResult> CloseOrder(string id, [FromBody] bool isClosed)
+        {
+            try
+            {
+                await _service.ToggleOrderCloseStatusAsync(id, isClosed);
+                return Ok(new { message = isClosed ? "订单已关闭" : "订单已重新激活" });
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }

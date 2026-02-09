@@ -15,21 +15,7 @@ namespace QualityControlAPI.Services.Crimping
             _logger = logger;
         }
 
-        // --- 配置数据读取 ---
-        public async Task<List<TerminalSpec>> GetTerminalsAsync() =>
-            await _context.TerminalSpecs.AsNoTracking().ToListAsync();
-
-        public async Task<List<WireSpec>> GetWiresAsync() =>
-            await _context.WireSpecs.AsNoTracking().ToListAsync();
-
-        public async Task<List<CrimpingTool>> GetToolsAsync() =>
-            await _context.CrimpingTools.AsNoTracking().ToListAsync();
-
-        public async Task<List<PullForceStandard>> GetStandardsAsync() =>
-            await _context.PullForceStandards.AsNoTracking().ToListAsync();
-
-        // --- 订单业务 ---
-
+        // --- 1. 查询 (Read) ---
         public async Task<List<ProductionOrder>> GetOrdersAsync()
         {
             return await _context.Orders
@@ -40,64 +26,128 @@ namespace QualityControlAPI.Services.Crimping
                 .ToListAsync();
         }
 
-        // 在 CrimpingService.cs 中修改此方法：
+        public async Task<ProductionOrder?> GetOrderByIdAsync(string id)
+        {
+            return await _context.Orders
+                .Include(o => o.Records)
+                    .ThenInclude(r => r.Samples)
+                .FirstOrDefaultAsync(o => o.Id == id);
+        }
+
+        // --- 2. 新增 (Create) ---
         public async Task<ProductionOrder> CreateOrderAsync(ProductionOrder order)
         {
-            // 简单直接：直接保存，因为前端已经把所有数据（包括ID）都生成好了
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             return order;
         }
 
-        // --- 检验记录业务 ---
+        // --- 3. 修改 (Update) ---
+        public async Task UpdateOrderAsync(ProductionOrder order)
+        {
+            var existing = await _context.Orders
+                .Include(o => o.Records)
+                .FirstOrDefaultAsync(o => o.Id == order.Id);
 
+            if (existing == null) throw new KeyNotFoundException("未找到该订单");
+
+            // 业务逻辑限制：如果已有检验记录，禁止修改关键工艺参数（防止篡改追溯数据）
+            if (existing.Records.Any())
+            {
+                // 只允许修改非核心字段，或者直接抛出异常
+                // throw new InvalidOperationException("该订单已产生检验记录，无法修改工艺参数");
+            }
+
+            // 更新字段
+            existing.ProductionOrderNo = order.ProductionOrderNo;
+            existing.ProductName = order.ProductName;
+            existing.ProductModel = order.ProductModel;
+            existing.ToolNo = order.ToolNo;
+            existing.TerminalSpecId = order.TerminalSpecId;
+            existing.WireSpecId = order.WireSpecId;
+            existing.StandardPullForce = order.StandardPullForce;
+
+            await _context.SaveChangesAsync();
+        }
+
+        // --- 4. 删除 (Delete) ---
+        public async Task DeleteOrderAsync(string id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.Records)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null) return;
+
+            // 安全校验：如果订单包含已审核通过的记录，建议拦截删除
+            if (order.Records.Any(r => r.Status == 1))
+            {
+                throw new InvalidOperationException("订单包含已合格的检验记录，不可删除");
+            }
+
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+        }
+
+        // --- 5. 配置项获取 (保持不变) ---
+        public async Task<List<TerminalSpec>> GetTerminalsAsync() => await _context.TerminalSpecs.AsNoTracking().ToListAsync();
+        public async Task<List<WireSpec>> GetWiresAsync() => await _context.WireSpecs.AsNoTracking().ToListAsync();
+        public async Task<List<CrimpingTool>> GetToolsAsync() => await _context.CrimpingTools.AsNoTracking().ToListAsync();
+        public async Task<List<PullForceStandard>> GetStandardsAsync() => await _context.PullForceStandards.AsNoTracking().ToListAsync();
+
+        // 1. 切换订单关闭状态
+        public async Task ToggleOrderCloseStatusAsync(string id, bool isClosed)
+        {
+            var order = await _context.Orders.FindAsync(id);
+            if (order == null) throw new KeyNotFoundException("订单不存在");
+
+            order.IsClosed = isClosed;
+            await _context.SaveChangesAsync();
+        }
+
+        // 2. 修改现有的 AddRecordAsync，增加逻辑保护
         public async Task AddRecordAsync(string orderId, InspectionRecord record)
         {
-            // 1. 检查订单是否存在
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null) throw new KeyNotFoundException("未找到对应的生产订单");
 
-            // 2. 关联订单 (现在类型匹配了，都是 string)
-            record.OrderId = orderId;
+            // 逻辑保护：已关闭的订单禁止提交检验
+            if (order.IsClosed)
+            {
+                throw new InvalidOperationException("该订单已关闭，无法添加新的检验记录");
+            }
 
-            // 3. 保存
+            record.OrderId = orderId;
             _context.Records.Add(record);
             await _context.SaveChangesAsync();
         }
 
-        public async Task AuditRecordAsync(string recordId, List<TerminalSample> samples, string auditorName, int status)
+
+        public async Task AuditRecordAsync(string recordId, RecordAuditDto auditData)
         {
-            // recordId 现在是 string 类型
-            var record = await _context.Records.FindAsync(recordId);
-            if (record == null) throw new KeyNotFoundException("记录不存在");
+            // 1. 查找记录
+            var record = await _context.Records
+                .Include(r => r.Samples)
+                .FirstOrDefaultAsync(r => r.Id == recordId);
 
-            record.Status = status; // 0/1/2
-            record.AuditorName = auditorName;
+            if (record == null) throw new KeyNotFoundException("未找到检验记录");
+
+            // 2. 更新审核信息
+            record.Status = auditData.Status; // 1=合格, 2=不合格
+            record.AuditorName = auditData.AuditorName;
             record.AuditedAt = DateTime.Now;
-            record.AuditNote = status == 1 ? "合格" : "不合格";
+            record.AuditNote = auditData.AuditNote;
 
-            // 更新关联的样本数据 (这里演示简单的覆盖逻辑：先删旧的，再加新的，或者直接更新数值)
-            // 实际业务中，建议根据 SampleIndex 更新现有的 Sample 记录
-            if (samples != null && samples.Any())
+            // 3. (可选) 如果审核时修改了样本实测值，同步更新
+            if (auditData.Samples != null && auditData.Samples.Any())
             {
-                // 找出数据库里已有的样本
-                var dbSamples = await _context.Samples
-                    .Where(s => s.InspectionRecordId == recordId)
-                    .ToListAsync();
-
-                foreach (var sample in samples)
+                foreach (var sampleUpdate in auditData.Samples)
                 {
-                    var target = dbSamples.FirstOrDefault(s => s.SampleIndex == sample.SampleIndex);
-                    if (target != null)
+                    var existingSample = record.Samples.FirstOrDefault(s => s.SampleIndex == sampleUpdate.SampleIndex);
+                    if (existingSample != null)
                     {
-                        target.MeasuredForce = sample.MeasuredForce;
-                        target.IsPassed = sample.IsPassed ?? false;
-                    }
-                    else
-                    {
-                        // 如果没找到，说明是新加的
-                        sample.InspectionRecordId = recordId;
-                        _context.Samples.Add(sample);
+                        existingSample.MeasuredForce = sampleUpdate.MeasuredForce;
+                        existingSample.IsPassed = sampleUpdate.IsPassed;
                     }
                 }
             }

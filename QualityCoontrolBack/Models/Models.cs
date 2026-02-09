@@ -57,10 +57,10 @@ namespace QualityControlAPI.Models
     {
         [Key]
         [Column("Id")]
-        public required string Id { get; set; } // 前端生成的 PO-xxx 字符串
+        public required string Id { get; set; }
 
         [Column("ProductionOrderNo")]
-        public required string ProductionOrderNo { get; set; } // 外部工单号
+        public required string ProductionOrderNo { get; set; }
 
         [Column("ProductName")] public string? ProductName { get; set; }
         [Column("ProductModel")] public string? ProductModel { get; set; }
@@ -69,6 +69,11 @@ namespace QualityControlAPI.Models
         [Column("WireSpecId")] public string? WireSpecId { get; set; }
         [Column("StandardPullForce")] public decimal? StandardPullForce { get; set; }
         [Column("CreatorName")] public string? CreatorName { get; set; }
+
+        // --- 新增字段 ---
+        [Column("IsClosed")]
+        public bool IsClosed { get; set; } = false;
+
         [Column("CreatedAt")] public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public List<InspectionRecord> Records { get; set; } = new();
@@ -108,5 +113,20 @@ namespace QualityControlAPI.Models
         [Column("SampleIndex")] public int SampleIndex { get; set; } // 1,2,3
         [Column("MeasuredForce")] public decimal? MeasuredForce { get; set; }
         [Column("IsPassed")] public bool? IsPassed { get; set; }
+    }
+
+    public class RecordAuditDto
+    {
+        public int Status { get; set; } // 1: 合格, 2: 不合格
+        public string AuditorName { get; set; }
+        public string? AuditNote { get; set; }
+        public List<SampleUpdateDto>? Samples { get; set; }
+    }
+
+    public class SampleUpdateDto
+    {
+        public int SampleIndex { get; set; }
+        public decimal MeasuredForce { get; set; }
+        public bool IsPassed { get; set; }
     }
 }

@@ -19,5 +19,6 @@ namespace QualityControlAPI.Services.Auth
             return await _context.Users
                 .FirstOrDefaultAsync(u => u.EmployeeId == username && u.Password == password);
         }
+
     }
 }
