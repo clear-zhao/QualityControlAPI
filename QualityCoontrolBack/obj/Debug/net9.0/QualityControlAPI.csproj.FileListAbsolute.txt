@@ -1,0 +1,8 @@
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.csproj.AssemblyReference.cache
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\rpswa.dswa.cache.json
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.GeneratedMSBuildEditorConfig.editorconfig
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.AssemblyInfoInputs.cache
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.AssemblyInfo.cs
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.csproj.CoreCompileInputs.cache
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.MvcApplicationPartsAssemblyInfo.cs
+D:\QualityControlPro\Back\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.MvcApplicationPartsAssemblyInfo.cache
