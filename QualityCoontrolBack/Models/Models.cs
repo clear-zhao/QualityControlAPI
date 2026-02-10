@@ -14,6 +14,17 @@ namespace QualityControlAPI.Models
         [Column("EmployeeId")] public required string EmployeeId { get; set; }
         [Column("Password")] public required string Password { get; set; }
         [Column("Role")] public int Role { get; set; }
+
+        // --- 新增字段 ---
+        [Column("Token")] public string? Token { get; set; }
+        [Column("TokenExpireTime")] public DateTime? TokenExpireTime { get; set; }
+    }
+
+    // 新增：用于自动登录/状态检查的请求体
+    public class TokenCheckRequest
+    {
+        public string EmployeeId { get; set; }
+        public string Token { get; set; }
     }
 
     [Table("CrimpingTools")]
@@ -87,23 +98,44 @@ namespace QualityControlAPI.Models
     {
         [Key]
         [Column("Id")]
-        public required string Id { get; set; } // 前端生成的字符串 ID
+        public required string Id { get; set; }
 
-        [Column("OrderId")] public string? OrderId { get; set; }
-        [JsonIgnore][ForeignKey("OrderId")] public ProductionOrder? Order { get; set; }
+        [Column("OrderId")]
+        public string? OrderId { get; set; }
 
-        [Column("Type")] public string? Type { get; set; }
-        [Column("SubmitterName")] public string? SubmitterName { get; set; }
-        [Column("SubmittedAt")] public DateTime? SubmittedAt { get; set; }
+        [JsonIgnore]
+        [ForeignKey("OrderId")]
+        public ProductionOrder? Order { get; set; }
 
-        [Column("Status")] public int Status { get; set; } // 0/1/2
+        [Column("Type")]
+        public string? Type { get; set; }
 
-        [Column("AuditorName")] public string? AuditorName { get; set; }
-        [Column("AuditedAt")] public DateTime? AuditedAt { get; set; }
-        [Column("AuditNote")] public string? AuditNote { get; set; }
+        // ✅ 新增：每条检验记录自己的检验工具编号（与订单 ToolNo 无关）
+        [Column("InspectionToolNo")]
+        public string? InspectionToolNo { get; set; }
+
+        [Column("SubmitterName")]
+        public string? SubmitterName { get; set; }
+
+        [Column("SubmittedAt")]
+        public DateTime? SubmittedAt { get; set; }
+
+        [Column("Status")]
+        public int Status { get; set; } // 0/1/2
+
+        [Column("AuditorName")]
+        public string? AuditorName { get; set; }
+
+        [Column("AuditedAt")]
+        public DateTime? AuditedAt { get; set; }
+
+        [Column("AuditNote")]
+        public string? AuditNote { get; set; }
 
         public List<TerminalSample> Samples { get; set; } = new();
     }
+
+
 
     [Table("TerminalSamples")]
     public class TerminalSample
@@ -137,5 +169,10 @@ namespace QualityControlAPI.Models
     {
         public string Id { get; set; }
         public string Name { get; set; } = "";
+    }
+
+    public class UpdateOrderToolDto //修改订单工具用的
+    {
+        public string? ToolNo { get; set; }
     }
 }

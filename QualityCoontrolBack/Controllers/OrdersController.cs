@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QualityControlAPI.Services.Crimping;
 using QualityControlAPI.Models;
+using QualityControlAPI.Services.Crimping;
 
 namespace QualityControlAPI.Controllers
 {
@@ -15,14 +15,14 @@ namespace QualityControlAPI.Controllers
             _service = service;
         }
 
-        // GET: api/orders
+        // =========================================================
+        // 订单查询 (Read)
+        // =========================================================
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductionOrder>>> GetAll()
-        {
-            return Ok(await _service.GetOrdersAsync());
-        }
+            => Ok(await _service.GetOrdersAsync());
 
-        // GET: api/orders/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductionOrder>> GetById(string id)
         {
@@ -31,7 +31,6 @@ namespace QualityControlAPI.Controllers
             return Ok(order);
         }
 
-        // GET: /api/crimping/orders/by-creator-employee?employeeId=58&includeClosed=true
         [HttpGet("orders/by-creator-employee")]
         public async Task<IActionResult> GetOrdersByCreatorEmployeeId(
             [FromQuery] string employeeId,
@@ -41,9 +40,12 @@ namespace QualityControlAPI.Controllers
             return Ok(list);
         }
 
-        // POST: api/orders
+        // =========================================================
+        // 订单新增 / 修改 / 删除 (Create / Update / Delete)
+        // =========================================================
+
         [HttpPost]
-        public async Task<ActionResult<ProductionOrder>> Create(ProductionOrder order)
+        public async Task<ActionResult<ProductionOrder>> Create([FromBody] ProductionOrder order)
         {
             try
             {
@@ -56,21 +58,26 @@ namespace QualityControlAPI.Controllers
             }
         }
 
-        // PUT: api/orders/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, ProductionOrder order)
+        public async Task<IActionResult> Update(string id, [FromBody] ProductionOrder order)
         {
             if (id != order.Id) return BadRequest("请求ID不一致");
+
             try
             {
                 await _service.UpdateOrderAsync(order);
                 return NoContent();
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/orders/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
@@ -79,12 +86,60 @@ namespace QualityControlAPI.Controllers
                 await _service.DeleteOrderAsync(id);
                 return NoContent();
             }
-            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/orders/{orderId}/records
+        // =========================================================
+        // 订单状态控制 (Close / Reopen)
+        // =========================================================
+
+        [HttpPatch("{id}/close")]
+        public async Task<IActionResult> CloseOrder(string id, [FromBody] bool isClosed)
+        {
+            try
+            {
+                await _service.ToggleOrderCloseStatusAsync(id, isClosed);
+                return Ok(new { message = isClosed ? "订单已关闭" : "订单已重新激活" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // PATCH: api/orders/{id}/tool
+        [HttpPatch("{id}/tool")]
+        public async Task<IActionResult> UpdateOrderTool(string id, [FromBody] UpdateOrderToolDto dto)
+        {
+            try
+            {
+                await _service.UpdateOrderToolNoAsync(id, dto.ToolNo);
+                return Ok(new { message = "订单工具编号已更新", orderId = id, toolNo = dto.ToolNo });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"服务器错误: {ex.Message}");
+            }
+        }
+
+
+        // =========================================================
+        // 检验记录：新增 / 审核 / 删除 (Record CRUD + Audit)
+        // =========================================================
+
         [HttpPost("{orderId}/records")]
-        public async Task<IActionResult> AddRecord(string orderId, InspectionRecord record)
+        public async Task<IActionResult> AddRecord(string orderId, [FromBody] InspectionRecord record)
         {
             try
             {
@@ -97,13 +152,7 @@ namespace QualityControlAPI.Controllers
             }
         }
 
-        // 放在 Controller 命名空间内或单独定义
 
-
-
-        // 在 OrdersController 类中添加接口：
-
-        // PUT: api/orders/records/{recordId}/audit
         [HttpPut("records/{recordId}/audit")]
         public async Task<IActionResult> AuditRecord(string recordId, [FromBody] RecordAuditDto auditData)
         {
@@ -128,21 +177,6 @@ namespace QualityControlAPI.Controllers
             }
         }
 
-        // PATCH: api/orders/{id}/close
-        [HttpPatch("{id}/close")]
-        public async Task<IActionResult> CloseOrder(string id, [FromBody] bool isClosed)
-        {
-            try
-            {
-                await _service.ToggleOrderCloseStatusAsync(id, isClosed);
-                return Ok(new { message = isClosed ? "订单已关闭" : "订单已重新激活" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpDelete("records/{recordId}")]
         public async Task<IActionResult> DeleteRecord(string recordId)
         {
@@ -150,9 +184,8 @@ namespace QualityControlAPI.Controllers
             {
                 await _service.DeleteRecordAsync(recordId);
                 return Ok(new { message = "删除成功", recordId });
-                // 或者：return NoContent();
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }

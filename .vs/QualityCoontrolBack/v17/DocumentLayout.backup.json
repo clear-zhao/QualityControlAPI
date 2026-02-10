@@ -3,36 +3,24 @@
   "WorkspaceRootPath": "D:\\QualityControlPro\\Back\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\services\\crimping\\crimpingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\services\\crimping\\crimpingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\services\\auth\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\controllers\\configcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\controllers\\configcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\services\\crimping\\crimpingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\services\\crimping\\crimpingservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\qualitycoontrolback\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\controllers\\orderscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -42,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 1498,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -50,106 +38,67 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Program.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Program.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Program.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Program.cs",
-              "RelativeToolTip": "QualityCoontrolBack\\Program.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAxwDcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:46.233Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "CrimpingService.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs*",
-              "RelativeToolTip": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs*",
-              "ViewState": "AgIAAFAAAAAAAAAAAAAAAI0AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:40.467Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Auth\\AuthService.cs*",
-              "RelativeToolTip": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:35.07Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "Models.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Models\\Models.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Models\\Models.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Models\\Models.cs*",
-              "RelativeToolTip": "QualityCoontrolBack\\Models\\Models.cs*",
-              "ViewState": "AgIAAE0AAAAAAAAAAAAYwH4AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:30.073Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "AppDbContext.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Data\\AppDbContext.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Data\\AppDbContext.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Data\\AppDbContext.cs",
-              "RelativeToolTip": "QualityCoontrolBack\\Data\\AppDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:24.635Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "OrdersController.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\OrdersController.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Controllers\\OrdersController.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\OrdersController.cs*",
-              "RelativeToolTip": "QualityCoontrolBack\\Controllers\\OrdersController.cs*",
-              "ViewState": "AgIAADkAAAAAAAAAAAAiwHgAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:18.967Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "ConfigController.cs",
-              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\ConfigController.cs",
-              "RelativeDocumentMoniker": "QualityCoontrolBack\\Controllers\\ConfigController.cs",
-              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\ConfigController.cs",
-              "RelativeToolTip": "QualityCoontrolBack\\Controllers\\ConfigController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:13.382Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
               "Title": "AuthController.cs",
               "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\AuthController.cs",
               "RelativeDocumentMoniker": "QualityCoontrolBack\\Controllers\\AuthController.cs",
               "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\AuthController.cs",
               "RelativeToolTip": "QualityCoontrolBack\\Controllers\\AuthController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAQAAAAAAAAAAAA6wDIAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T10:45:03.893Z",
+              "WhenOpened": "2026-02-10T07:34:39.224Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAgwCQAAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T06:22:50.564Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Models.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Models\\Models.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Models\\Models.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Models\\Models.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Models\\Models.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T04:46:18.846Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "OrdersController.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\OrdersController.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Controllers\\OrdersController.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Controllers\\OrdersController.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Controllers\\OrdersController.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAcwIYAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T04:44:35.525Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CrimpingService.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAzwJQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-10T04:36:54.051Z",
               "EditorCaption": ""
             }
           ]

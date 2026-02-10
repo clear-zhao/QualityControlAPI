@@ -23,10 +23,22 @@ namespace QualityControlAPI.Controllers
             {
                 return Unauthorized("账号或密码错误");
             }
+            // 返回包含新 Token 的用户信息
             return Ok(user);
         }
-        // ✅ GET: /api/auth/users
-        // 返回：[{ "id": 1, "name": "管理员" }, ...]
+
+        // ✅ 新增：自动登录/状态检查接口
+        [HttpPost("check-token")]
+        public async Task<ActionResult<User>> CheckToken([FromBody] TokenCheckRequest request)
+        {
+            var user = await _authService.ValidateTokenAsync(request.EmployeeId, request.Token);
+            if (user == null)
+            {
+                return Unauthorized("登录已过期或已在其他地方登录");
+            }
+            return Ok(user); // 验证成功，返回用户信息
+        }
+
         [HttpGet("users")]
         public async Task<IActionResult> GetAllUsersIdAndName()
         {
