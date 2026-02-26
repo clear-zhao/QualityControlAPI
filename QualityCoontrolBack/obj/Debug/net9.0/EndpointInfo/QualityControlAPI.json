@@ -819,6 +819,9 @@
             "type": "integer",
             "format": "int32"
           },
+          "isDisabled": {
+            "type": "boolean"
+          },
           "token": {
             "type": "string",
             "nullable": true

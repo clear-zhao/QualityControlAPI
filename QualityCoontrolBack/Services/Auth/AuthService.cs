@@ -13,11 +13,12 @@ namespace QualityControlAPI.Services.Auth
             _context = context;
         }
 
-        // ✅ 新增：获取所有用户（Id + Name）
+        // ✅ 获取所有未被禁用的用户（Id + Name）
         public async Task<List<UserNameDto>> GetAllUserIdAndNamesAsync()
         {
             return await _context.Users
                 .AsNoTracking()
+                .Where(u => !u.IsDisabled) // 【修改点1】：过滤掉被禁用的账号，不在下拉列表中显示
                 .OrderBy(u => u.Name)
                 .Select(u => new UserNameDto
                 {
@@ -31,7 +32,9 @@ namespace QualityControlAPI.Services.Auth
         {
             // 1. 验证账号密码
             var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.EmployeeId == username && u.Password == password);
+                .FirstOrDefaultAsync(u => u.EmployeeId == username
+                                       && u.Password == password
+                                       && !u.IsDisabled); // 【修改点2】：禁止被禁用的账号登录
 
             if (user != null)
             {
@@ -45,14 +48,15 @@ namespace QualityControlAPI.Services.Auth
             return user;
         }
 
-        // 新增：通过 Token 验证用户是否依然合法在线
+        // 通过 Token 验证用户是否依然合法在线
         public async Task<User?> ValidateTokenAsync(string employeeId, string token)
         {
             return await _context.Users
                 .AsNoTracking() // 仅查询，不需要追踪
                 .FirstOrDefaultAsync(u => u.EmployeeId == employeeId
                                        && u.Token == token
-                                       && u.TokenExpireTime > DateTime.Now);
+                                       && u.TokenExpireTime > DateTime.Now
+                                       && !u.IsDisabled); // 【修改点3】：如果在线期间被管理员禁用，验证将失败，强制顶下线
         }
     }
 }

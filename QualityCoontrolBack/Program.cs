@@ -4,7 +4,8 @@ using QualityControlAPI.Services.Auth;
 using QualityControlAPI.Services.Crimping;
 using System.Text.Json.Serialization;
 
-var builder = WebApplication.CreateBuilder(args);
+ var builder = WebApplication.CreateBuilder(args);
+
 
 // 1. Êý¾Ý¿âÅäÖÃ
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -35,6 +36,7 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
+
 
 var app = builder.Build();
 

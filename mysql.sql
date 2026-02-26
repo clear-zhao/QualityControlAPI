@@ -11,15 +11,17 @@ CREATE TABLE Users
     Password   VARCHAR(255) NOT NULL,
     Role       TINYINT      NOT NULL DEFAULT 0,
     CreatedAt  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsDisabled TINYINT      NOT NULL DEFAULT 0,
     UNIQUE KEY UK_Users_EmployeeId (EmployeeId)
 );
 
 -- 2. 压接工具
 CREATE TABLE CrimpingTools
 (
-    Id    INT AUTO_INCREMENT PRIMARY KEY,
-    Model VARCHAR(100) NOT NULL,
-    Type  VARCHAR(20)  NOT NULL,
+    Id         INT AUTO_INCREMENT PRIMARY KEY,
+    Model      VARCHAR(100) NOT NULL,
+    Type       VARCHAR(20)  NOT NULL,
+    IsDisabled TINYINT      NOT NULL DEFAULT 0,
     UNIQUE KEY UK_CrimpingTools_Model (Model)
 );
 
@@ -31,6 +33,7 @@ CREATE TABLE TerminalSpecs
     Name         VARCHAR(100) NOT NULL,
     Description  VARCHAR(255) NULL,
     Method       TINYINT      NOT NULL,
+    IsDisabled   TINYINT      NOT NULL DEFAULT 0,
     UNIQUE KEY UK_TerminalSpecs_MaterialCode (MaterialCode)
 );
 
@@ -39,7 +42,8 @@ CREATE TABLE WireSpecs
 (
     Id          VARCHAR(20)   NOT NULL PRIMARY KEY,
     DisplayName VARCHAR(100)  NOT NULL,
-    SectionArea DECIMAL(6, 2) NOT NULL
+    SectionArea DECIMAL(6, 2) NOT NULL,
+    IsDisabled  TINYINT       NOT NULL DEFAULT 0
 );
 
 -- 5. 拉力标准
@@ -48,9 +52,9 @@ CREATE TABLE PullForceStandards
     Id            INT AUTO_INCREMENT PRIMARY KEY,
     Method        TINYINT       NOT NULL,
     SectionArea   DECIMAL(6, 2) NOT NULL,
-    StandardValue INT           NOT NULL
+    StandardValue INT           NOT NULL,
+    IsDisabled    TINYINT       NOT NULL DEFAULT 0
 );
-
 -- 6. 生产订单  (关键修改：完全匹配前端字段，ID改为字符串)
 CREATE TABLE ProductionOrders
 (
@@ -92,7 +96,7 @@ CREATE TABLE TerminalSamples
     CONSTRAINT FK_Samples_Record FOREIGN KEY (InspectionRecordId) REFERENCES InspectionRecords (Id) ON DELETE CASCADE
 );
 
--- 插入一些基础数据 (防止前端拉不到列表报错) INSERT INTO Users (Name, EmployeeId, Password, Role) VALUES ('管理员', 'admin', '123', 1), ('张工', '1001', '123', 0); INSERT INTO CrimpingTools (Model, Type) VALUES ('Tool-A', '手动'), ('Tool-B', '机器'); INSERT INTO TerminalSpecs (MaterialCode, Name, Description, Method) VALUES ('2000473580', '示例端子A', '描述...', 0); INSERT INTO WireSpecs (Id, DisplayName, SectionArea) VALUES ('W-0.5', '0.5mm²', 0.5); INSERT INTO PullForceStandards (Method, SectionArea, StandardValue) VALUES (0, 0.5, 85);
+-- 插入一些基础数据 (防止前端拉不到列表报错) INSERT INTO Users (Name, EmployeeId, Password, Role) VALUES ('管理员', 'admin', '123', 1), ('张工', '1001', '123', 0); INSERT INTO CrimpingTools (Model, Type) VALUES ('Tool-A', '手动'), ('Tool-B', '机器'); INSERT INTO TerminalSpecs (MaterialCode, Name, Description, Method) VALUES ('2000473580', '示例端子A', '描述...', 0); INSERT INTO WireSpecs (I'd, DisplayName, SectionArea) VALUES ('W-0.5', '0.5mm²', 0.5); INSERT INTO PullForceStandards (Method, SectionArea, StandardValue) VALUES (0, 0.5, 85);
 
 show tables;
 
@@ -221,7 +225,10 @@ VALUES ('W-0.1', '0.1 mm²', 0.1),
        ('W-110.0', '110.0 mm²', 110.0),
        ('W-120.0', '120.0 mm²', 120.0);
 
--- ============================================= -- 6. 插入拉力标准规则 (PullForceStandards) -- Method: 0=坑压, 1=模压, 2=B型 -- =============================================
+-- =============================================
+-- 6. 插入拉力标准规则 (PullForceStandards)
+-- Method: 0=坑压, 1=模压, 2=B型
+-- =============================================
 INSERT INTO PullForceStandards (Method, SectionArea, StandardValue)
 VALUES
     -- 0.1
@@ -351,6 +358,8 @@ select *
 from inspectionrecords;
 select *
 from productionorders;
+
+select * from ProductionOrders;
 
 DELETE
 FROM ProductionOrders;

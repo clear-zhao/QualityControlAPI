@@ -4,8 +4,6 @@ using System.Text.Json.Serialization;
 
 namespace QualityControlAPI.Models
 {
-    // ... User, Tool, Specs 保持不变，重点改 Order ...
-
     [Table("Users")]
     public class User
     {
@@ -16,6 +14,7 @@ namespace QualityControlAPI.Models
         [Column("Role")] public int Role { get; set; }
 
         // --- 新增字段 ---
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
         [Column("Token")] public string? Token { get; set; }
         [Column("TokenExpireTime")] public DateTime? TokenExpireTime { get; set; }
     }
@@ -33,6 +32,8 @@ namespace QualityControlAPI.Models
         [Key][Column("Id")] public int Id { get; set; }
         [Column("Model")] public required string Model { get; set; }
         [Column("Type")] public required string Type { get; set; }
+
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
     }
 
     [Table("TerminalSpecs")]
@@ -43,6 +44,8 @@ namespace QualityControlAPI.Models
         [Column("Name")] public required string Name { get; set; }
         [Column("Description")] public string? Description { get; set; }
         [Column("Method")] public int Method { get; set; }
+
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
     }
 
     [Table("WireSpecs")]
@@ -51,6 +54,8 @@ namespace QualityControlAPI.Models
         [Key][Column("Id")] public required string Id { get; set; }
         [Column("DisplayName")] public required string DisplayName { get; set; }
         [Column("SectionArea")] public decimal SectionArea { get; set; }
+
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
     }
 
     [Table("PullForceStandards")]
@@ -60,6 +65,8 @@ namespace QualityControlAPI.Models
         [Column("Method")] public int Method { get; set; }
         [Column("SectionArea")] public decimal SectionArea { get; set; }
         [Column("StandardValue")] public int StandardValue { get; set; }
+
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
     }
 
     // --- 重点修改：完全匹配前端 JSON 结构 ---

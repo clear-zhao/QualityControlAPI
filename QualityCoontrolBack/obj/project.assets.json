@@ -1238,11 +1238,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\QualityControlAPI.csproj",
+      "projectUniqueName": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\QualityControlAPI.csproj",
       "projectName": "QualityControlAPI",
-      "projectPath": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\QualityControlAPI.csproj",
+      "projectPath": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\QualityControlAPI.csproj",
       "packagesPath": "C:\\Users\\AY\\.nuget\\packages\\",
-      "outputPath": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\obj\\",
+      "outputPath": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "D:\\Microsoft Visual Studio\\Shared\\NuGetPackages"

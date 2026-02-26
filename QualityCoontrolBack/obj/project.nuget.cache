@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ppdRoT2wArM=",
+  "dgSpecHash": "iuT8FGZBUUQ=",
   "success": true,
-  "projectFilePath": "D:\\QualityControlPro\\Back\\QualityCoontrolBack\\QualityControlAPI.csproj",
+  "projectFilePath": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\QualityControlAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\AY\\.nuget\\packages\\microsoft.entityframeworkcore\\9.0.0\\microsoft.entityframeworkcore.9.0.0.nupkg.sha512",
     "C:\\Users\\AY\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\9.0.0\\microsoft.entityframeworkcore.abstractions.9.0.0.nupkg.sha512",
