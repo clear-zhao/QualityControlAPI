@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using QualityControlAPI.Services.Auth;
 using QualityControlAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace QualityControlAPI.Controllers
 {
@@ -47,5 +48,13 @@ namespace QualityControlAPI.Controllers
         }
     }
 
-    public class LoginRequest { public string Username { get; set; } public string Password { get; set; } }
+    public class LoginRequest
+    {
+        // 基础输入校验：避免空账号/空密码进入数据库查询。
+        [Required]
+        public string Username { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
 }

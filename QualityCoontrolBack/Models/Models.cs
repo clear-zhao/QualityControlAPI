@@ -22,8 +22,11 @@ namespace QualityControlAPI.Models
     // 新增：用于自动登录/状态检查的请求体
     public class TokenCheckRequest
     {
-        public string EmployeeId { get; set; }
-        public string Token { get; set; }
+        [Required]
+        public string EmployeeId { get; set; } = string.Empty;
+
+        [Required]
+        public string Token { get; set; } = string.Empty;
     }
 
     [Table("CrimpingTools")]
@@ -160,7 +163,8 @@ namespace QualityControlAPI.Models
     public class RecordAuditDto
     {
         public int Status { get; set; } // 1: 合格, 2: 不合格
-        public string AuditorName { get; set; }
+        [Required]
+        public string AuditorName { get; set; } = string.Empty;
         public string? AuditNote { get; set; }
         public List<SampleUpdateDto>? Samples { get; set; }
     }
