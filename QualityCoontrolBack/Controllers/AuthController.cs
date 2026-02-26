@@ -18,6 +18,12 @@ namespace QualityControlAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login([FromBody] LoginRequest request)
         {
+            // 安全校验：避免空请求或空凭据导致异常查询
+            if (request == null || string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("账号和密码不能为空");
+            }
+
             var user = await _authService.LoginAsync(request.Username, request.Password);
             if (user == null)
             {
@@ -31,6 +37,12 @@ namespace QualityControlAPI.Controllers
         [HttpPost("check-token")]
         public async Task<ActionResult<User>> CheckToken([FromBody] TokenCheckRequest request)
         {
+            // 安全校验：避免空参数通过后触发无效鉴权
+            if (request == null || string.IsNullOrWhiteSpace(request.EmployeeId) || string.IsNullOrWhiteSpace(request.Token))
+            {
+                return BadRequest("employeeId 和 token 不能为空");
+            }
+
             var user = await _authService.ValidateTokenAsync(request.EmployeeId, request.Token);
             if (user == null)
             {

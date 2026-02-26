@@ -62,6 +62,17 @@ namespace QualityControlAPI.Services.Crimping
 
         public async Task<ProductionOrder> CreateOrderAsync(ProductionOrder order)
         {
+            // 安全校验：关键标识为空时拒绝创建，避免脏数据进入数据库
+            if (order == null)
+                throw new ArgumentNullException(nameof(order));
+
+            if (string.IsNullOrWhiteSpace(order.Id) || string.IsNullOrWhiteSpace(order.ProductionOrderNo))
+                throw new InvalidOperationException("订单ID和生产工单号不能为空");
+
+            var exists = await _context.Orders.AnyAsync(o => o.Id == order.Id);
+            if (exists)
+                throw new InvalidOperationException("订单ID已存在");
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             return order;
@@ -69,6 +80,12 @@ namespace QualityControlAPI.Services.Crimping
 
         public async Task UpdateOrderAsync(ProductionOrder order)
         {
+            if (order == null)
+                throw new ArgumentNullException(nameof(order));
+
+            if (string.IsNullOrWhiteSpace(order.Id) || string.IsNullOrWhiteSpace(order.ProductionOrderNo))
+                throw new InvalidOperationException("订单ID和生产工单号不能为空");
+
             var existing = await _context.Orders
                 .Include(o => o.Records)
                 .FirstOrDefaultAsync(o => o.Id == order.Id);
@@ -154,6 +171,19 @@ namespace QualityControlAPI.Services.Crimping
 
         public async Task AddRecordAsync(string orderId, InspectionRecord record)
         {
+            if (string.IsNullOrWhiteSpace(orderId))
+                throw new ArgumentException("orderId 不能为空");
+
+            if (record == null)
+                throw new ArgumentNullException(nameof(record));
+
+            if (string.IsNullOrWhiteSpace(record.Id))
+                throw new InvalidOperationException("检验记录ID不能为空");
+
+            var duplicateRecord = await _context.Records.AnyAsync(r => r.Id == record.Id);
+            if (duplicateRecord)
+                throw new InvalidOperationException("检验记录ID已存在");
+
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
                 throw new KeyNotFoundException("未找到对应的生产订单");
@@ -174,6 +204,12 @@ namespace QualityControlAPI.Services.Crimping
 
         public async Task AuditRecordAsync(string recordId, RecordAuditDto auditData)
         {
+            if (string.IsNullOrWhiteSpace(recordId))
+                throw new ArgumentException("recordId 不能为空");
+
+            if (auditData == null)
+                throw new ArgumentNullException(nameof(auditData));
+
             var record = await _context.Records
                 .Include(r => r.Samples)
                 .FirstOrDefaultAsync(r => r.Id == recordId);

@@ -2,17 +2,58 @@ using Microsoft.EntityFrameworkCore;
 using QualityControlAPI.Data;
 using QualityControlAPI.Services.Auth;
 using QualityControlAPI.Services.Crimping;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
  var builder = WebApplication.CreateBuilder(args);
 
 
-// 1. Êı¾İ¿âÅäÖÃ
+// å®‰å…¨æ ¡éªŒï¼šè¿æ¥ä¸²ç¼ºå¤±æ—¶ç›´æ¥é˜»æ­¢å¯åŠ¨ï¼Œé¿å…è¿è¡ŒæœŸæ•°æ®åº“åˆå§‹åŒ–æŠ¥é”™
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException("ç¼ºå°‘æ•°æ®åº“è¿æ¥å­—ç¬¦ä¸²: DefaultConnection");
+}
+    options.UseMySql(
+        connectionString,
+        ServerVersion.AutoDetect(connectionString),
+        mySqlOptions =>
+        {
+            // Auto retry for transient DB/network failures to improve self-recovery
+            mySqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+        }));
+if (!app.Environment.IsDevelopment())
+{
+    // Global exception fallback to keep service stable during unexpected failures
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalException");
+            var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+            if (exceptionFeature != null)
+            {
+                logger.LogError(exceptionFeature.Error, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
+            }
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+
+            var payload = new
+            {
+                message = "æœåŠ¡å™¨å†…éƒ¨é”™è¯¯ï¼Œè¯·ç¨åé‡è¯•",
+                traceId = context.TraceIdentifier
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
+        });
+    });
+}
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// 2. ¿ØÖÆÆ÷ÅäÖÃ
+// 2. æ§åˆ¶å™¨é…ç½®
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -20,15 +61,15 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// 3. ×¢²áÒµÎñ·şÎñ
+// 3. æ³¨å†Œä¸šåŠ¡æœåŠ¡
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CrimpingService>();
 
-// 4. Swagger£¨Swashbuckle£©
+// 4. Swaggerï¼ˆSwashbuckleï¼‰
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 5. ¿çÓòÅäÖÃ
+// 5. è·¨åŸŸé…ç½®
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -40,7 +81,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 6. ÖĞ¼ä¼ş¹ÜµÀ
+// 6. ä¸­é—´ä»¶ç®¡é“
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -49,7 +90,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-// Èç¹ûÄãºóÃæÓĞ¼øÈ¨/ÊÚÈ¨£¬ÕâÁ½ĞĞÒª¼ÓÉÏ£¨Ã»ÓÃµ½Ò²²»Ó°Ïì£©
+// å¦‚æœä½ åé¢æœ‰é‰´æƒ/æˆæƒï¼Œè¿™ä¸¤è¡Œè¦åŠ ä¸Šï¼ˆæ²¡ç”¨åˆ°ä¹Ÿä¸å½±å“ï¼‰
 app.UseAuthentication();
 app.UseAuthorization();
 
