@@ -15,10 +15,6 @@ namespace QualityControlAPI.Services.Crimping
             _logger = logger;
         }
 
-        // =========================================================
-        // 订单查询 (Read)
-        // =========================================================
-
         public async Task<List<ProductionOrder>> GetOrdersAsync()
         {
             return await _context.Orders
@@ -31,9 +27,12 @@ namespace QualityControlAPI.Services.Crimping
 
         public async Task<ProductionOrder?> GetOrderByIdAsync(string id)
         {
+            if (string.IsNullOrWhiteSpace(id)) return null;
+
             return await _context.Orders
                 .Include(o => o.Records)
                     .ThenInclude(r => r.Samples)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
@@ -46,7 +45,7 @@ namespace QualityControlAPI.Services.Crimping
                 .Include(o => o.Records)
                     .ThenInclude(r => r.Samples)
                 .AsNoTracking()
-                .Where(o => o.CreatorEmployeeId != null && o.CreatorEmployeeId == employeeId);
+                .Where(o => o.CreatorEmployeeId == employeeId);
 
             if (!includeClosed)
                 query = query.Where(o => !o.IsClosed);
@@ -56,12 +55,16 @@ namespace QualityControlAPI.Services.Crimping
                 .ToListAsync();
         }
 
-        // =========================================================
-        // 订单新增 / 修改 / 删除 (Create / Update / Delete)
-        // =========================================================
-
         public async Task<ProductionOrder> CreateOrderAsync(ProductionOrder order)
         {
+            if (string.IsNullOrWhiteSpace(order.Id) || string.IsNullOrWhiteSpace(order.ProductionOrderNo))
+                throw new InvalidOperationException("订单ID和生产单号不能为空");
+
+            // 防止重复主键导致数据库异常，提前做业务校验并返回友好信息。
+            var existed = await _context.Orders.AnyAsync(o => o.Id == order.Id);
+            if (existed)
+                throw new InvalidOperationException("订单ID已存在，请勿重复创建");
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
             return order;
@@ -76,14 +79,6 @@ namespace QualityControlAPI.Services.Crimping
             if (existing == null)
                 throw new KeyNotFoundException("未找到该订单");
 
-            // 业务逻辑限制：如果已有检验记录，禁止修改关键工艺参数（防止篡改追溯数据）
-            if (existing.Records.Any())
-            {
-                // 你可以在这里更严格：
-                // throw new InvalidOperationException("该订单已产生检验记录，无法修改工艺参数");
-            }
-
-            // 更新字段
             existing.ProductionOrderNo = order.ProductionOrderNo;
             existing.ProductName = order.ProductName;
             existing.ProductModel = order.ProductModel;
@@ -103,17 +98,12 @@ namespace QualityControlAPI.Services.Crimping
 
             if (order == null) return;
 
-            // 安全校验：如果订单包含已审核通过的记录，建议拦截删除
             if (order.Records.Any(r => r.Status == 1))
                 throw new InvalidOperationException("订单包含已合格的检验记录，不可删除");
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
         }
-
-        // =========================================================
-        // 订单状态控制 (Close / Reopen)
-        // =========================================================
 
         public async Task ToggleOrderCloseStatusAsync(string id, bool isClosed)
         {
@@ -125,13 +115,11 @@ namespace QualityControlAPI.Services.Crimping
             await _context.SaveChangesAsync();
         }
 
-        // 修改订单的工具编号 ToolNo
         public async Task UpdateOrderToolNoAsync(string orderId, string? toolNo)
         {
             if (string.IsNullOrWhiteSpace(orderId))
                 throw new ArgumentException("orderId 不能为空");
 
-            // 如果你不允许传空，就打开这段
             if (string.IsNullOrWhiteSpace(toolNo))
                 throw new InvalidOperationException("工具编号不能为空");
 
@@ -139,21 +127,17 @@ namespace QualityControlAPI.Services.Crimping
             if (order == null)
                 throw new KeyNotFoundException("订单不存在");
 
-            // 可选：若你希望订单关闭后不允许改工具
-            // if (order.IsClosed)
-            //     throw new InvalidOperationException("订单已关闭，禁止修改工具编号");
-
             order.ToolNo = toolNo;
             await _context.SaveChangesAsync();
         }
 
-
-        // =========================================================
-        // 检验记录：新增 / 审核 / 删除 (Record CRUD + Audit)
-        // =========================================================
-
         public async Task AddRecordAsync(string orderId, InspectionRecord record)
         {
+            if (string.IsNullOrWhiteSpace(orderId))
+                throw new ArgumentException("orderId 不能为空");
+            if (string.IsNullOrWhiteSpace(record.Id))
+                throw new InvalidOperationException("记录ID不能为空");
+
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
                 throw new KeyNotFoundException("未找到对应的生产订单");
@@ -161,16 +145,14 @@ namespace QualityControlAPI.Services.Crimping
             if (order.IsClosed)
                 throw new InvalidOperationException("该订单已关闭，无法添加新的检验记录");
 
-            // 只绑定外键
+            var existed = await _context.Records.AnyAsync(r => r.Id == record.Id);
+            if (existed)
+                throw new InvalidOperationException("检验记录ID已存在，请勿重复提交");
+
             record.OrderId = orderId;
-
-            // ✅ 不做任何“从订单同步工具编号”的行为
-            // record.InspectionToolNo 由前端提交（每条记录独立）
-
             _context.Records.Add(record);
             await _context.SaveChangesAsync();
         }
-
 
         public async Task AuditRecordAsync(string recordId, RecordAuditDto auditData)
         {
@@ -181,7 +163,7 @@ namespace QualityControlAPI.Services.Crimping
             if (record == null)
                 throw new KeyNotFoundException("未找到检验记录");
 
-            record.Status = auditData.Status; // 1=合格, 2=不合格
+            record.Status = auditData.Status;
             record.AuditorName = auditData.AuditorName;
             record.AuditedAt = DateTime.Now;
             record.AuditNote = auditData.AuditNote;
@@ -219,15 +201,11 @@ namespace QualityControlAPI.Services.Crimping
             await _context.SaveChangesAsync();
         }
 
-        // =========================================================
-        // 基础配置数据获取 (下拉选项等)
-        // =========================================================
-
         public async Task<List<TerminalSpec>> GetTerminalsAsync()
-    => await _context.TerminalSpecs
-        .AsNoTracking()
-        .Where(t => !t.IsDisabled)
-        .ToListAsync();
+            => await _context.TerminalSpecs
+                .AsNoTracking()
+                .Where(t => !t.IsDisabled)
+                .ToListAsync();
 
         public async Task<List<WireSpec>> GetWiresAsync()
             => await _context.WireSpecs

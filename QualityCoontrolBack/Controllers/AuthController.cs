@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using QualityControlAPI.Services.Auth;
 using QualityControlAPI.Models;
+using QualityControlAPI.Services.Auth;
 
 namespace QualityControlAPI.Controllers
 {
@@ -18,25 +18,36 @@ namespace QualityControlAPI.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login([FromBody] LoginRequest request)
         {
+            // 入参校验，防止空请求导致后续逻辑异常。
+            if (request == null || string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest("用户名和密码不能为空");
+            }
+
             var user = await _authService.LoginAsync(request.Username, request.Password);
             if (user == null)
             {
                 return Unauthorized("账号或密码错误");
             }
-            // 返回包含新 Token 的用户信息
+
             return Ok(user);
         }
 
-        // ✅ 新增：自动登录/状态检查接口
         [HttpPost("check-token")]
         public async Task<ActionResult<User>> CheckToken([FromBody] TokenCheckRequest request)
         {
+            // 令牌校验接口需要确保 employeeId 和 token 都有效。
+            if (request == null || string.IsNullOrWhiteSpace(request.EmployeeId) || string.IsNullOrWhiteSpace(request.Token))
+            {
+                return BadRequest("employeeId 和 token 不能为空");
+            }
+
             var user = await _authService.ValidateTokenAsync(request.EmployeeId, request.Token);
             if (user == null)
             {
                 return Unauthorized("登录已过期或已在其他地方登录");
             }
-            return Ok(user); // 验证成功，返回用户信息
+            return Ok(user);
         }
 
         [HttpGet("users")]
@@ -47,5 +58,9 @@ namespace QualityControlAPI.Controllers
         }
     }
 
-    public class LoginRequest { public string Username { get; set; } public string Password { get; set; } }
+    public class LoginRequest
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
 }
