@@ -5,14 +5,17 @@ using QualityControlAPI.Services.Crimping;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
- var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 
+// 1. ݿ
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 // 安全校验：连接串缺失时直接阻止启动，避免运行期数据库初始化报错
 if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException("缺少数据库连接字符串: DefaultConnection");
 }
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString),
@@ -21,6 +24,42 @@ if (string.IsNullOrWhiteSpace(connectionString))
             // Auto retry for transient DB/network failures to improve self-recovery
             mySqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
         }));
+
+// 2. 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
+
+// 3. עҵ
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CrimpingService>();
+
+// 4. SwaggerSwashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// 5. 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+
+var app = builder.Build();
+
+// 6. мܵ
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 if (!app.Environment.IsDevelopment())
 {
     // Global exception fallback to keep service stable during unexpected failures
@@ -49,48 +88,9 @@ if (!app.Environment.IsDevelopment())
     });
 }
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
-
-// 2. 控制器配置
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-    });
-
-// 3. 注册业务服务
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<CrimpingService>();
-
-// 4. Swagger（Swashbuckle）
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-// 5. 跨域配置
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-    });
-});
-
-
-var app = builder.Build();
-
-// 6. 中间件管道
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseCors("AllowAll");
 
-// 如果你后面有鉴权/授权，这两行要加上（没用到也不影响）
+// мȨ/ȨҪϣûõҲӰ죩
 app.UseAuthentication();
 app.UseAuthorization();
 
