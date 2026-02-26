@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using QualityControlAPI.Models;
 using QualityControlAPI.Services.Crimping;
 
@@ -47,10 +48,22 @@ namespace QualityControlAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ProductionOrder>> Create([FromBody] ProductionOrder order)
         {
+            // 安全校验：提前拦截空请求体，避免服务层空引用
+            if (order == null) return BadRequest("订单数据不能为空");
+
             try
             {
                 var result = await _service.CreateOrderAsync(order);
                 return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (DbUpdateException)
+            {
+                // 数据库写入失败时可重试，避免前端误判为业务错误
+                return StatusCode(503, "数据库繁忙或写入失败，请稍后重试");
             }
             catch (Exception ex)
             {
@@ -61,6 +74,7 @@ namespace QualityControlAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] ProductionOrder order)
         {
+            if (order == null) return BadRequest("订单数据不能为空");
             if (id != order.Id) return BadRequest("请求ID不一致");
 
             try
@@ -75,6 +89,11 @@ namespace QualityControlAPI.Controllers
             catch (InvalidOperationException ex)
             {
                 return BadRequest(ex.Message);
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                // 并发更新冲突时返回 409，提示客户端重新拉取后再提交
+                return Conflict("数据已被其他用户修改，请刷新后重试");
             }
         }
 
@@ -114,6 +133,8 @@ namespace QualityControlAPI.Controllers
         [HttpPatch("{id}/tool")]
         public async Task<IActionResult> UpdateOrderTool(string id, [FromBody] UpdateOrderToolDto dto)
         {
+            if (dto == null) return BadRequest("请求体不能为空");
+
             try
             {
                 await _service.UpdateOrderToolNoAsync(id, dto.ToolNo);
@@ -141,10 +162,20 @@ namespace QualityControlAPI.Controllers
         [HttpPost("{orderId}/records")]
         public async Task<IActionResult> AddRecord(string orderId, [FromBody] InspectionRecord record)
         {
+            if (record == null) return BadRequest("检验记录不能为空");
+
             try
             {
                 await _service.AddRecordAsync(orderId, record);
                 return Ok();
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(503, "数据库繁忙或写入失败，请稍后重试");
             }
             catch (Exception ex)
             {
@@ -156,6 +187,9 @@ namespace QualityControlAPI.Controllers
         [HttpPut("records/{recordId}/audit")]
         public async Task<IActionResult> AuditRecord(string recordId, [FromBody] RecordAuditDto auditData)
         {
+            if (auditData == null)
+                return BadRequest("审核数据不能为空");
+
             if (string.IsNullOrEmpty(auditData.AuditorName))
                 return BadRequest("审核人姓名不能为空");
 

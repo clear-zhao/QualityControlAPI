@@ -30,6 +30,10 @@ namespace QualityControlAPI.Services.Auth
 
         public async Task<User?> LoginAsync(string username, string password)
         {
+            // 安全校验：空账号或空密码直接返回，避免无效数据库查询
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+                return null;
+
             // 1. 验证账号密码
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.EmployeeId == username
@@ -51,6 +55,10 @@ namespace QualityControlAPI.Services.Auth
         // 通过 Token 验证用户是否依然合法在线
         public async Task<User?> ValidateTokenAsync(string employeeId, string token)
         {
+            // 安全校验：空参数直接返回，避免放行异常请求
+            if (string.IsNullOrWhiteSpace(employeeId) || string.IsNullOrWhiteSpace(token))
+                return null;
+
             return await _context.Users
                 .AsNoTracking() // 仅查询，不需要追踪
                 .FirstOrDefaultAsync(u => u.EmployeeId == employeeId
