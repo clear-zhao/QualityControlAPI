@@ -1,0 +1,58 @@
+using System.Text.Json;
+using QualityControlAPI.Services.Auth;
+
+namespace QualityControlAPI.Middleware
+{
+    public class TokenValidationMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public TokenValidationMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task InvokeAsync(HttpContext context, AuthService authService)
+        {
+            var path = context.Request.Path.Value ?? string.Empty;
+
+            if (IsAnonymousPath(path))
+            {
+                await _next(context);
+                return;
+            }
+
+            var employeeId = context.Request.Headers["X-Employee-Id"].FirstOrDefault();
+            var token = context.Request.Headers["X-Token"].FirstOrDefault();
+
+            if (string.IsNullOrWhiteSpace(employeeId) || string.IsNullOrWhiteSpace(token))
+            {
+                await WriteUnauthorizedAsync(context, "拒绝操作：缺少登录凭证");
+                return;
+            }
+
+            var user = await authService.ValidateTokenAsync(employeeId, token);
+            if (user == null)
+            {
+                await WriteUnauthorizedAsync(context, "拒绝操作：账户已在别处登录或登录已失效");
+                return;
+            }
+
+            await _next(context);
+        }
+
+        private static bool IsAnonymousPath(string path)
+        {
+            return path.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase)
+                   || path.Equals("/api/Auth/login", StringComparison.OrdinalIgnoreCase)
+                   || path.Equals("/api/Auth/check-token", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static async Task WriteUnauthorizedAsync(HttpContext context, string message)
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { message }));
+        }
+    }
+}

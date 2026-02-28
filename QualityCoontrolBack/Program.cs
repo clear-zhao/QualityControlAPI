@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QualityControlAPI.Data;
+using QualityControlAPI.Middleware;
 using QualityControlAPI.Services.Auth;
 using QualityControlAPI.Services.Crimping;
 using System.Text.Json;
@@ -7,6 +8,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // 1. ݿ
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -15,7 +17,8 @@ if (string.IsNullOrWhiteSpace(connectionString))
 {
     throw new InvalidOperationException("缺少数据库连接字符串: DefaultConnection");
 }
-builder.Services.AddDbContext<AppDbContext>(options =>
+
+builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseMySql(
         connectionString,
         ServerVersion.AutoDetect(connectionString),
@@ -50,10 +53,37 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 var app = builder.Build();
 
-// 6. 
+if (!app.Environment.IsDevelopment())
+{
+    // Global exception fallback to keep service stable during unexpected failures
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalException");
+            var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
+            if (exceptionFeature != null)
+            {
+                logger.LogError(exceptionFeature.Error, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
+            }
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
+
+            var payload = new
+            {
+                message = "服务器内部错误，请稍后重试",
+                traceId = context.TraceIdentifier
+            };
+
+            await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
+        });
+    });
+}
+
+// 6. 中间件管道
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -90,7 +120,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-// 
+app.UseMiddleware<TokenValidationMiddleware>();
+
+// 如果你后面有鉴权/授权，这两行要加上（没用到也不影响）
 app.UseAuthentication();
 app.UseAuthorization();
 
