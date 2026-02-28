@@ -53,7 +53,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// 6. мܵ
+// 6. 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -90,7 +90,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseCors("AllowAll");
 
-// мȨ/ȨҪϣûõҲӰ죩
+// 
 app.UseAuthentication();
 app.UseAuthorization();
 

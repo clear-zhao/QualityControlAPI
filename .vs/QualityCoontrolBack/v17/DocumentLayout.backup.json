@@ -7,6 +7,18 @@
       "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\clear-zhao\\qualitycontrolapi\\qualitycoontrolback\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\clear-zhao\\qualitycontrolapi\\qualitycoontrolback\\models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\clear-zhao\\qualitycontrolapi\\qualitycoontrolback\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|d:\\qualitycontrolpro\\back\\clear-zhao\\qualitycontrolapi\\qualitycoontrolback\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{24D2D588-3369-4355-9BE5-883A344344A3}|QualityCoontrolBack\\QualityControlAPI.csproj|solutionrelative:qualitycoontrolback\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -26,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 1498,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 5,
           "Children": [
             {
               "$type": "Bookmark",
@@ -35,6 +47,44 @@
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAADUAAAAAAAAAAADwvz8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-27T02:24:02.411Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Models.cs",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Models\\Models.cs",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\Models\\Models.cs",
+              "ToolTip": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Models\\Models.cs",
+              "RelativeToolTip": "QualityCoontrolBack\\Models\\Models.cs",
+              "ViewState": "AgIAAFsAAAAAAAAAAAAWwEQAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-26T11:42:15.822Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\appsettings.json",
+              "RelativeDocumentMoniker": "QualityCoontrolBack\\appsettings.json",
+              "ToolTip": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\appsettings.json",
+              "RelativeToolTip": "QualityCoontrolBack\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-26T11:40:08.626Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "AppDbContext.cs",
               "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Data\\AppDbContext.cs",
               "RelativeDocumentMoniker": "QualityCoontrolBack\\Data\\AppDbContext.cs",
@@ -42,8 +92,7 @@
               "RelativeToolTip": "QualityCoontrolBack\\Data\\AppDbContext.cs",
               "ViewState": "AgIAAAUAAAAAAAAAAAA7wAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-26T11:35:34.707Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-26T11:35:34.707Z"
             },
             {
               "$type": "Document",
@@ -53,14 +102,14 @@
               "RelativeDocumentMoniker": "QualityCoontrolBack\\Program.cs",
               "ToolTip": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Program.cs",
               "RelativeToolTip": "QualityCoontrolBack\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGEAAAAKAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-02-26T11:34:39.328Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
               "Title": "AuthService.cs",
               "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
               "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
@@ -68,12 +117,11 @@
               "RelativeToolTip": "QualityCoontrolBack\\Services\\Auth\\AuthService.cs",
               "ViewState": "AgIAAC0AAAAAAAAAAAA1wBcAAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-26T11:22:36.891Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-26T11:22:36.891Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 5,
               "Title": "CrimpingService.cs",
               "DocumentMoniker": "D:\\QualityControlPro\\Back\\clear-zhao\\QualityControlAPI\\QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
               "RelativeDocumentMoniker": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
@@ -81,8 +129,7 @@
               "RelativeToolTip": "QualityCoontrolBack\\Services\\Crimping\\CrimpingService.cs",
               "ViewState": "AgIAAA4BAAAAAAAAAAAxwBoBAAAsAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-26T06:31:16.456Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-26T06:31:16.456Z"
             }
           ]
         },
