@@ -262,25 +262,25 @@ namespace QualityControlAPI.Services.Crimping
         public async Task<List<TerminalSpec>> GetTerminalsAsync()
     => await _context.TerminalSpecs
         .AsNoTracking()
-        .Where(t => !t.IsDisabled)
+        //.Where(t => !t.IsDisabled)
         .ToListAsync();
 
         public async Task<List<WireSpec>> GetWiresAsync()
             => await _context.WireSpecs
                 .AsNoTracking()
-                .Where(w => !w.IsDisabled)
+                //.Where(w => !w.IsDisabled)
                 .ToListAsync();
 
         public async Task<List<CrimpingTool>> GetToolsAsync()
             => await _context.CrimpingTools
                 .AsNoTracking()
-                .Where(c => !c.IsDisabled)
+                //.Where(c => !c.IsDisabled)
                 .ToListAsync();
 
         public async Task<List<PullForceStandard>> GetStandardsAsync()
             => await _context.PullForceStandards
                 .AsNoTracking()
-                .Where(s => !s.IsDisabled)
+                //.Where(s => !s.IsDisabled)
                 .ToListAsync();
     }
 }

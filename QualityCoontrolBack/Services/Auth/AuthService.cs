@@ -18,7 +18,7 @@ namespace QualityControlAPI.Services.Auth
         {
             return await _context.Users
                 .AsNoTracking()
-                .Where(u => !u.IsDisabled) // 【修改点1】：过滤掉被禁用的账号，不在下拉列表中显示
+                //.Where(u => !u.IsDisabled) // 【修改点1】：过滤掉被禁用的账号，不在下拉列表中显示
                 .OrderBy(u => u.Name)
                 .Select(u => new UserNameDto
                 {

@@ -115,7 +115,6 @@ D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\D
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\staticwebassets.build.json.cache
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\staticwebassets.development.json
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\staticwebassets.build.endpoints.json
-D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\QualityC.2DF46F99.Up2Date
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\QualityControlAPI.dll
 D:\QualityControlPro\Back\clear-zhao\QualityControlAPI\QualityCoontrolBack\obj\Debug\net9.0\refint\QualityControlAPI.dll
