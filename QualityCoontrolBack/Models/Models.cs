@@ -19,11 +19,23 @@ namespace QualityControlAPI.Models
         [Column("TokenExpireTime")] public DateTime? TokenExpireTime { get; set; }
     }
 
-    // 新增：用于自动登录/状态检查的请求体
+    // 用户响应 DTO：排除密码等敏感字段，所有返回用户信息的接口统一使用
+    public class UserResponseDto
+    {
+        public int Id { get; set; }
+        public required string Name { get; set; }
+        public required string EmployeeId { get; set; }
+        public int Role { get; set; }
+        public bool IsDisabled { get; set; }
+        public string? Token { get; set; }
+        public DateTime? TokenExpireTime { get; set; }
+    }
+
+    // 用于自动登录/状态检查的请求体
     public class TokenCheckRequest
     {
-        public string EmployeeId { get; set; }
-        public string Token { get; set; }
+        public required string EmployeeId { get; set; }
+        public required string Token { get; set; }
     }
 
     [Table("CrimpingTools")]
@@ -160,7 +172,7 @@ namespace QualityControlAPI.Models
     public class RecordAuditDto
     {
         public int Status { get; set; } // 1: 合格, 2: 不合格
-        public string AuditorName { get; set; }
+        public required string AuditorName { get; set; }
         public string? AuditNote { get; set; }
         public List<SampleUpdateDto>? Samples { get; set; }
     }
@@ -174,8 +186,8 @@ namespace QualityControlAPI.Models
 
     public class UserNameDto
     {
-        public string Id { get; set; }
-        public string Name { get; set; } = "";
+        public required string Id { get; set; }
+        public required string Name { get; set; }
     }
 
     public class UpdateOrderToolDto //修改订单工具用的

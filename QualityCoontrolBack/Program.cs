@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 // 1. ݿ
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -88,34 +87,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-}
-
-if (!app.Environment.IsDevelopment())
-{
-    // Global exception fallback to keep service stable during unexpected failures
-    app.UseExceptionHandler(errorApp =>
-    {
-        errorApp.Run(async context =>
-        {
-            var logger = context.RequestServices.GetRequiredService<ILoggerFactory>().CreateLogger("GlobalException");
-            var exceptionFeature = context.Features.Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>();
-            if (exceptionFeature != null)
-            {
-                logger.LogError(exceptionFeature.Error, "Unhandled exception on {Method} {Path}", context.Request.Method, context.Request.Path);
-            }
-
-            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-            context.Response.ContentType = "application/json";
-
-            var payload = new
-            {
-                message = "服务器内部错误，请稍后重试",
-                traceId = context.TraceIdentifier
-            };
-
-            await context.Response.WriteAsync(JsonSerializer.Serialize(payload));
-        });
-    });
 }
 
 app.UseCors("AllowAll");

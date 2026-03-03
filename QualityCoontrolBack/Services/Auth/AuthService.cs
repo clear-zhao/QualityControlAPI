@@ -18,7 +18,7 @@ namespace QualityControlAPI.Services.Auth
         {
             return await _context.Users
                 .AsNoTracking()
-                //.Where(u => !u.IsDisabled) // 【修改点1】：过滤掉被禁用的账号，不在下拉列表中显示
+                .Where(u => !u.IsDisabled)
                 .OrderBy(u => u.Name)
                 .Select(u => new UserNameDto
                 {
@@ -34,21 +34,30 @@ namespace QualityControlAPI.Services.Auth
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 return null;
 
-            // 1. 验证账号密码
+            // 1. 查用户（先按账号查，密码在内存中做安全校验，支持哈希）
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.EmployeeId == username
-                                       && u.Password == password
                                        && !u.IsDisabled); // 【修改点2】：禁止被禁用的账号登录
 
-            if (user != null)
-            {
-                // 2. 登录成功，生成新 Token（实现“后登顶掉前登”）
-                user.Token = Guid.NewGuid().ToString("N");
-                // 设置有效期，例如 7 天
-                user.TokenExpireTime = DateTime.Now.AddDays(7);
+            if (user == null)
+                return null;
 
-                await _context.SaveChangesAsync();
+            var isPasswordValid = PasswordHasher.VerifyPassword(password, user.Password);
+            if (!isPasswordValid)
+                return null;
+
+            // 2. 老数据平滑迁移：如果当前是明文密码，登录成功后自动升级为哈希存储
+            if (!PasswordHasher.IsHashed(user.Password))
+            {
+                user.Password = PasswordHasher.HashPassword(password);
             }
+
+            // 3. 登录成功，生成新 Token（实现“后登顶掉前登”）
+            user.Token = Guid.NewGuid().ToString("N");
+            // 设置有效期，例如 7 天
+            user.TokenExpireTime = DateTime.Now.AddDays(7);
+
+            await _context.SaveChangesAsync();
             return user;
         }
 

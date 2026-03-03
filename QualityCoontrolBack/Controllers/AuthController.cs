@@ -16,7 +16,7 @@ namespace QualityControlAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login([FromBody] LoginRequest request)
+        public async Task<ActionResult<UserResponseDto>> Login([FromBody] LoginRequest request)
         {
             // 安全校验：避免空请求或空凭据导致异常查询
             if (request == null || string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
@@ -29,13 +29,13 @@ namespace QualityControlAPI.Controllers
             {
                 return Unauthorized("账号或密码错误");
             }
-            // 返回包含新 Token 的用户信息
-            return Ok(user);
+            // 返回 DTO 而非实体，避免泄露密码等敏感字段
+            return Ok(MapToDto(user));
         }
 
-        // ✅ 新增：自动登录/状态检查接口
+        // 自动登录/状态检查接口
         [HttpPost("check-token")]
-        public async Task<ActionResult<User>> CheckToken([FromBody] TokenCheckRequest request)
+        public async Task<ActionResult<UserResponseDto>> CheckToken([FromBody] TokenCheckRequest request)
         {
             // 安全校验：避免空参数通过后触发无效鉴权
             if (request == null || string.IsNullOrWhiteSpace(request.EmployeeId) || string.IsNullOrWhiteSpace(request.Token))
@@ -48,7 +48,7 @@ namespace QualityControlAPI.Controllers
             {
                 return Unauthorized("登录已过期或已在其他地方登录");
             }
-            return Ok(user); // 验证成功，返回用户信息
+            return Ok(MapToDto(user));
         }
 
         [HttpGet("users")]
@@ -57,7 +57,23 @@ namespace QualityControlAPI.Controllers
             var list = await _authService.GetAllUserIdAndNamesAsync();
             return Ok(list);
         }
+
+        // 将 User 实体映射为 DTO，统一脱敏处理
+        private static UserResponseDto MapToDto(User user) => new()
+        {
+            Id = user.Id,
+            Name = user.Name,
+            EmployeeId = user.EmployeeId,
+            Role = user.Role,
+            IsDisabled = user.IsDisabled,
+            Token = user.Token,
+            TokenExpireTime = user.TokenExpireTime,
+        };
     }
 
-    public class LoginRequest { public string Username { get; set; } public string Password { get; set; } }
+    public class LoginRequest
+    {
+        public required string Username { get; set; }
+        public required string Password { get; set; }
+    }
 }

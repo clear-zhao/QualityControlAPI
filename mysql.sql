@@ -5,13 +5,15 @@ USE QualityControl;
 -- 1. 用户表
 CREATE TABLE Users
 (
-    Id         INT AUTO_INCREMENT PRIMARY KEY,
-    Name       VARCHAR(50)  NOT NULL,
-    EmployeeId VARCHAR(50)  NOT NULL,
-    Password   VARCHAR(255) NOT NULL,
-    Role       TINYINT      NOT NULL DEFAULT 0,
-    CreatedAt  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    IsDisabled TINYINT      NOT NULL DEFAULT 0,
+    Id              INT AUTO_INCREMENT PRIMARY KEY,
+    Name            VARCHAR(50)  NOT NULL,
+    EmployeeId      VARCHAR(50)  NOT NULL,
+    Password        VARCHAR(255) NOT NULL,
+    Role            TINYINT      NOT NULL DEFAULT 0,
+    CreatedAt       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    IsDisabled      TINYINT      NOT NULL DEFAULT 0, -- 是否被禁用 (0=否, 1=是)
+    Token           VARCHAR(255) NULL COMMENT '登录校验令牌',
+    TokenExpireTime DATETIME     NULL COMMENT '令牌过期时间',
     UNIQUE KEY UK_Users_EmployeeId (EmployeeId)
 );
 
@@ -21,7 +23,7 @@ CREATE TABLE CrimpingTools
     Id         INT AUTO_INCREMENT PRIMARY KEY,
     Model      VARCHAR(100) NOT NULL,
     Type       VARCHAR(20)  NOT NULL,
-    IsDisabled TINYINT      NOT NULL DEFAULT 0,
+    IsDisabled TINYINT      NOT NULL DEFAULT 0, -- 是否被禁用 (0=否, 1=是)
     UNIQUE KEY UK_CrimpingTools_Model (Model)
 );
 
@@ -33,7 +35,7 @@ CREATE TABLE TerminalSpecs
     Name         VARCHAR(100) NOT NULL,
     Description  VARCHAR(255) NULL,
     Method       TINYINT      NOT NULL,
-    IsDisabled   TINYINT      NOT NULL DEFAULT 0,
+    IsDisabled   TINYINT      NOT NULL DEFAULT 0, -- 是否被禁用 (0=否, 1=是)
     UNIQUE KEY UK_TerminalSpecs_MaterialCode (MaterialCode)
 );
 
@@ -43,7 +45,7 @@ CREATE TABLE WireSpecs
     Id          VARCHAR(20)   NOT NULL PRIMARY KEY,
     DisplayName VARCHAR(100)  NOT NULL,
     SectionArea DECIMAL(6, 2) NOT NULL,
-    IsDisabled  TINYINT       NOT NULL DEFAULT 0
+    IsDisabled  TINYINT       NOT NULL DEFAULT 0 -- 是否被禁用 (0=否, 1=是)
 );
 
 -- 5. 拉力标准
@@ -53,35 +55,40 @@ CREATE TABLE PullForceStandards
     Method        TINYINT       NOT NULL,
     SectionArea   DECIMAL(6, 2) NOT NULL,
     StandardValue INT           NOT NULL,
-    IsDisabled    TINYINT       NOT NULL DEFAULT 0
+    IsDisabled    TINYINT       NOT NULL DEFAULT 0 -- 是否被禁用 (0=否, 1=是)
 );
--- 6. 生产订单  (关键修改：完全匹配前端字段，ID改为字符串)
+
+-- 6. 生产订单 (关键修改：完全匹配前端字段，ID改为字符串，整合了追加的字段和索引)
 CREATE TABLE ProductionOrders
 (
     Id                VARCHAR(64)    NOT NULL PRIMARY KEY, -- 改为字符串，匹配前端生成的 PO-xxx
     ProductionOrderNo VARCHAR(64)    NOT NULL,
     ProductName       VARCHAR(128)   NULL,
-    ProductModel      VARCHAR(128)   NULL,                 -- 新增
-    ToolNo            VARCHAR(50)    NULL,                 -- 新增
-    TerminalSpecId    VARCHAR(50)    NULL,                 -- 新增
-    WireSpecId        VARCHAR(50)    NULL,                 -- 新增
-    StandardPullForce DECIMAL(10, 2) NULL,                 -- 新增
-    CreatorName       VARCHAR(50)    NULL,                 -- 新增
-    CreatedAt         DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP
+    ProductModel      VARCHAR(128)   NULL,
+    ToolNo            VARCHAR(50)    NULL,
+    TerminalSpecId    VARCHAR(50)    NULL,
+    WireSpecId        VARCHAR(50)    NULL,
+    StandardPullForce DECIMAL(10, 2) NULL,
+    CreatorName       VARCHAR(50)    NULL,
+    CreatorEmployeeId VARCHAR(50)    NULL,                 -- 记录创建者工号/ID
+    IsClosed          TINYINT        NOT NULL DEFAULT 0,   -- 标识订单是否已结束
+    CreatedAt         DATETIME       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    KEY IX_ProductionOrders_CreatorEmployeeId (CreatorEmployeeId) -- 按工号查会快很多
 );
 
--- 7. 检验记录
+-- 7. 检验记录 (整合了追加的 InspectionToolNo 字段)
 CREATE TABLE InspectionRecords
 (
-    Id            VARCHAR(64)  NOT NULL PRIMARY KEY, -- 改为字符串，匹配前端Guid
-    OrderId       VARCHAR(64)  NULL,                 -- 对应订单主键
-    Type          VARCHAR(20)  NULL,                 -- 首件/末件
-    SubmitterName VARCHAR(50)  NULL,
-    SubmittedAt   DATETIME     NULL,
-    Status        INT          NOT NULL DEFAULT 0,   -- 0=待审, 1=合格, 2=不合格
-    AuditorName   VARCHAR(50)  NULL,
-    AuditedAt     DATETIME     NULL,
-    AuditNote     VARCHAR(255) NULL,
+    Id               VARCHAR(64)  NOT NULL PRIMARY KEY, -- 改为字符串，匹配前端Guid
+    OrderId          VARCHAR(64)  NULL,                 -- 对应订单主键
+    Type             VARCHAR(20)  NULL,                 -- 首件/末件
+    InspectionToolNo VARCHAR(50)  NULL,                 -- 记录此次检验使用的工具ID/编号
+    SubmitterName    VARCHAR(50)  NULL,
+    SubmittedAt      DATETIME     NULL,
+    Status           INT          NOT NULL DEFAULT 0,   -- 0=待审, 1=合格, 2=不合格
+    AuditorName      VARCHAR(50)  NULL,
+    AuditedAt        DATETIME     NULL,
+    AuditNote        VARCHAR(255) NULL,
     CONSTRAINT FK_Records_Order FOREIGN KEY (OrderId) REFERENCES ProductionOrders (Id) ON DELETE CASCADE
 );
 
@@ -96,15 +103,13 @@ CREATE TABLE TerminalSamples
     CONSTRAINT FK_Samples_Record FOREIGN KEY (InspectionRecordId) REFERENCES InspectionRecords (Id) ON DELETE CASCADE
 );
 
--- 插入一些基础数据 (防止前端拉不到列表报错) INSERT INTO Users (Name, EmployeeId, Password, Role) VALUES ('管理员', 'admin', '123', 1), ('张工', '1001', '123', 0); INSERT INTO CrimpingTools (Model, Type) VALUES ('Tool-A', '手动'), ('Tool-B', '机器'); INSERT INTO TerminalSpecs (MaterialCode, Name, Description, Method) VALUES ('2000473580', '示例端子A', '描述...', 0); INSERT INTO WireSpecs (I'd, DisplayName, SectionArea) VALUES ('W-0.5', '0.5mm²', 0.5); INSERT INTO PullForceStandards (Method, SectionArea, StandardValue) VALUES (0, 0.5, 85);
 
-show tables;
+-- =============================================
+-- 插入初始化数据
+-- =============================================
 
-USE QualityControl;
-
--- ============================================= -- 1. 清理旧数据 (如果需要重置，请取消注释以下行) -- ============================================= -- SET FOREIGN_KEY_CHECKS = 0; -- TRUNCATE TABLE TerminalSamples; -- TRUNCATE TABLE InspectionRecords; -- TRUNCATE TABLE ProductionOrders; -- TRUNCATE TABLE PullForceStandards; -- TRUNCATE TABLE WireSpecs; -- TRUNCATE TABLE TerminalSpecs; -- TRUNCATE TABLE CrimpingTools; -- TRUNCATE TABLE Users; -- SET FOREIGN_KEY_CHECKS = 1;
-
--- ============================================= -- 2. 插入员工数据 (Users) -- 密码默认: 123, Role: 0=员工, 1=检验员 -- =============================================
+-- 插入员工数据 (Users)
+-- 密码默认: 123, Role: 0=员工, 1=检验员
 INSERT INTO Users (Name, EmployeeId, Password, Role)
 VALUES
     -- 装配组
@@ -135,7 +140,8 @@ VALUES
     ('管理员', 'admin', '123', 1),
     ('检验员', '999', '123', 1);
 
--- ============================================= -- 3. 插入压接工具 (CrimpingTools) -- =============================================
+
+-- 插入压接工具 (CrimpingTools)
 INSERT INTO CrimpingTools (Model, Type)
 VALUES ('975236', '手动'),
        ('975304', '手动'),
@@ -145,7 +151,9 @@ VALUES ('975236', '手动'),
        ('EM-6B2', '机器'),
        ('FEK-60EM', '机器');
 
--- ============================================= -- 4. 插入端子规格 (TerminalSpecs) -- Method: 0=坑压, 1=模压 -- =============================================
+
+-- 插入端子规格 (TerminalSpecs)
+-- Method: 0=坑压, 1=模压
 INSERT INTO TerminalSpecs (MaterialCode, Name, Description, Method)
 VALUES ('2000473580', '预绝缘双线管状端头', 'H1.0/15\WEIDMULLER魏德米勒\红\压接\管', 0),
        ('2000448061', '针型预绝缘端头', 'HPTNYD5.5-13\浙江华西科技有限公司\黄色\压接\针', 1),
@@ -182,7 +190,8 @@ VALUES ('2000473580', '预绝缘双线管状端头', 'H1.0/15\WEIDMULLER魏德�
        ('2000366606', '压接端子', 'OD.JZ6.5-5\压接\圆形', 1),
        ('2000184851', '接线端子片', 'RV3.5-4\雷欣特\压接\圆形', 1);
 
--- ============================================= -- 5. 插入导线规格 (WireSpecs) -- 根据文档表格整理，保留了特殊描述的线材 -- =============================================
+
+-- 插入导线规格 (WireSpecs)
 INSERT INTO WireSpecs (Id, DisplayName, SectionArea)
 VALUES ('W-0.1', '0.1 mm²', 0.1),
        ('W-0.12', '0.12 mm²', 0.12),
@@ -225,86 +234,49 @@ VALUES ('W-0.1', '0.1 mm²', 0.1),
        ('W-110.0', '110.0 mm²', 110.0),
        ('W-120.0', '120.0 mm²', 120.0);
 
--- =============================================
--- 6. 插入拉力标准规则 (PullForceStandards)
+
+-- 插入拉力标准规则 (PullForceStandards)
 -- Method: 0=坑压, 1=模压, 2=B型
--- =============================================
 INSERT INTO PullForceStandards (Method, SectionArea, StandardValue)
 VALUES
     -- 0.1
-    (0, 0.1, 16),
-    (1, 0.1, 25),
-    (2, 0.1, 30),
+    (0, 0.1, 16), (1, 0.1, 25), (2, 0.1, 30),
     -- 0.12
-    (0, 0.12, 20),
-    (1, 0.12, 30),
-    (2, 0.12, 17),
+    (0, 0.12, 20), (1, 0.12, 30), (2, 0.12, 17),
     -- 0.2
-    (0, 0.2, 34),
-    (1, 0.2, 44),
-    (2, 0.2, 28),
+    (0, 0.2, 34), (1, 0.2, 44), (2, 0.2, 28),
     -- 0.3
-    (0, 0.3, 51),
-    (1, 0.3, 60),
-    (2, 0.3, 40),
+    (0, 0.3, 51), (1, 0.3, 60), (2, 0.3, 40),
     -- 0.35
-    (0, 0.35, 60),
-    (1, 0.35, 70),
-    (2, 0.35, 46),
+    (0, 0.35, 60), (1, 0.35, 70), (2, 0.35, 46),
     -- 0.4
-    (0, 0.4, 68),
-    (1, 0.4, 75),
-    (2, 0.4, 54),
+    (0, 0.4, 68), (1, 0.4, 75), (2, 0.4, 54),
     -- 0.5
-    (0, 0.5, 85),
-    (1, 0.5, 85),
-    (2, 0.5, 65),
+    (0, 0.5, 85), (1, 0.5, 85), (2, 0.5, 65),
     -- 0.6
-    (0, 0.6, 100),
-    (1, 0.6, 120),
-    (2, 0.6, 75),
+    (0, 0.6, 100), (1, 0.6, 120), (2, 0.6, 75),
     -- 0.75
-    (0, 0.75, 129),
-    (1, 0.75, 150),
-    (2, 0.75, 90),
+    (0, 0.75, 129), (1, 0.75, 150), (2, 0.75, 90),
     -- 0.8
-    (0, 0.8, 138),
-    (1, 0.8, 160),
-    (2, 0.8, 98),
+    (0, 0.8, 138), (1, 0.8, 160), (2, 0.8, 98),
     -- 1.0
-    (0, 1.0, 172),
-    (1, 1.0, 190),
-    (2, 1.0, 120),
+    (0, 1.0, 172), (1, 1.0, 190), (2, 1.0, 120),
     -- 1.2
-    (0, 1.2, 206),
-    (1, 1.2, 210),
-    (2, 1.2, 140),
+    (0, 1.2, 206), (1, 1.2, 210), (2, 1.2, 140),
     -- 1.5
-    (0, 1.5, 248),
-    (1, 1.5, 240),
-    (2, 1.5, 160),
+    (0, 1.5, 248), (1, 1.5, 240), (2, 1.5, 160),
     -- 2.0
-    (0, 2.0, 300),
-    (1, 2.0, 300),
-    (2, 2.0, 210),
+    (0, 2.0, 300), (1, 2.0, 300), (2, 2.0, 210),
     -- 2.5
-    (0, 2.5, 375),
-    (1, 2.5, 370),
-    (2, 2.5, 250),
+    (0, 2.5, 375), (1, 2.5, 370), (2, 2.5, 250),
     -- 3.0
-    (0, 3.0, 450),
-    (1, 3.0, 450),
-    (2, 3.0, 280),
+    (0, 3.0, 450), (1, 3.0, 450), (2, 3.0, 280),
     -- 4.0
-    (0, 4.0, 600),
-    (1, 4.0, 560),
-    (2, 4.0, 340),
+    (0, 4.0, 600), (1, 4.0, 560), (2, 4.0, 340),
     -- 5.0 (坑压无)
-    (1, 5.0, 650),
-    (2, 5.0, 400),
+    (1, 5.0, 650), (2, 5.0, 400),
     -- 6.0
-    (1, 6.0, 750),
-    (2, 6.0, 460),
+    (1, 6.0, 750), (2, 6.0, 460),
     -- 8.0 (仅模压)
     (1, 8.0, 950),
     -- 10.0
@@ -348,91 +320,33 @@ VALUES
     -- 120.0
     (1, 120.0, 3900);
 
-select *
-from PullForceStandards;
 
-select *
-from terminalsamples;
+-- =============================================
+-- 查询语句 (验证各表结构和基础数据是否正常)
+-- =============================================
 
-select *
-from inspectionrecords;
-select *
-from productionorders;
+use QualityControl;
 
-select * from ProductionOrders;
+-- 查询用户表 (查看是否包含Token及禁用字段)
+SELECT * FROM Users;
 
-DELETE
-FROM ProductionOrders;
+-- 查询压接工具 (查看是否包含禁用字段)
+SELECT * FROM CrimpingTools;
 
-ALTER TABLE ProductionOrders
-    ADD COLUMN IsClosed TINYINT NOT NULL DEFAULT 0 AFTER CreatorName;
+-- 查询端子规格 (查看是否包含禁用字段)
+SELECT * FROM TerminalSpecs;
 
-USE QualityControl;
+-- 查询导线规格 (查看是否包含禁用字段)
+SELECT * FROM WireSpecs;
 
-SET @col_exists := (
-  SELECT COUNT(*)
-  FROM information_schema.COLUMNS
-  WHERE TABLE_SCHEMA = DATABASE()
-    AND TABLE_NAME = 'ProductionOrders'
-    AND COLUMN_NAME = 'IsClosed'
-);
+-- 查询拉力标准 (查看是否包含禁用字段)
+SELECT * FROM PullForceStandards;
 
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE ProductionOrders ADD COLUMN IsClosed TINYINT(1) NOT NULL DEFAULT 0 AFTER CreatorName;',
-  'SELECT ''Column IsClosed already exists in ProductionOrders.'' AS Info;'
-);
+-- 查询生产订单 (查看包含的 IsClosed、CreatorEmployeeId 等字段)
+SELECT * FROM ProductionOrders;
 
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+-- 查询检验记录 (查看包含的 InspectionToolNo 字段)
+SELECT * FROM InspectionRecords;
 
-
-USE QualityControl;
-
--- 若列不存在才添加 CreatorEmployeeId
-SET @col_exists := (
-  SELECT COUNT(*)
-  FROM information_schema.COLUMNS
-  WHERE TABLE_SCHEMA = DATABASE()
-    AND TABLE_NAME = 'ProductionOrders'
-    AND COLUMN_NAME = 'CreatorEmployeeId'
-);
-
-SET @sql := IF(@col_exists = 0,
-  'ALTER TABLE ProductionOrders ADD COLUMN CreatorEmployeeId VARCHAR(50) NULL AFTER CreatorName;',
-  'SELECT ''Column CreatorEmployeeId already exists in ProductionOrders.'' AS Info;'
-);
-
-PREPARE stmt FROM @sql;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
-
--- （建议）加索引：按工号查会快很多
-SET @idx_exists := (
-  SELECT COUNT(*)
-  FROM information_schema.STATISTICS
-  WHERE TABLE_SCHEMA = DATABASE()
-    AND TABLE_NAME = 'ProductionOrders'
-    AND INDEX_NAME = 'IX_ProductionOrders_CreatorEmployeeId'
-);
-
-SET @sql2 := IF(@idx_exists = 0,
-  'CREATE INDEX IX_ProductionOrders_CreatorEmployeeId ON ProductionOrders (CreatorEmployeeId);',
-  'SELECT ''Index IX_ProductionOrders_CreatorEmployeeId already exists.'' AS Info;'
-);
-
-PREPARE stmt2 FROM @sql2;
-EXECUTE stmt2;
-DEALLOCATE PREPARE stmt2;
-
-DESCRIBE ProductionOrders;
-
-ALTER TABLE InspectionRecords
-ADD COLUMN ToolNo VARCHAR(50) NULL AFTER Type;
-
-ALTER TABLE InspectionRecords
-CHANGE COLUMN ToolNo InspectionToolNo VARCHAR(50) NULL;
-
-ALTER TABLE Users
-ADD COLUMN Token VARCHAR(255) NULL COMMENT '登录校验令牌',
-ADD COLUMN TokenExpireTime DATETIME NULL COMMENT '令牌过期时间';
+-- 查询样本数据记录
+SELECT * FROM TerminalSamples;
