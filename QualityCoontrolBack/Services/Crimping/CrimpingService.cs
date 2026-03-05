@@ -259,11 +259,36 @@ namespace QualityControlAPI.Services.Crimping
         // 基础配置数据获取 (下拉选项等)
         // =========================================================
 
-        public async Task<List<TerminalSpec>> GetTerminalsAsync()
-            => await _context.TerminalSpecs
+        public async Task<List<TerminalSpecResponseDto>> GetTerminalsAsync()
+        {
+            // 1) 先查启用的端子规格，保留 method 编号用于后续标准匹配
+            var terminals = await _context.TerminalSpecs
                 .AsNoTracking()
                 .Where(t => !t.IsDisabled)
                 .ToListAsync();
+
+            if (!terminals.Any())
+                return new List<TerminalSpecResponseDto>();
+
+            // 2) 用 method 编号关联字典表，拿到方法中文名
+            var methodCodes = terminals.Select(t => t.Method).Distinct().ToList();
+            var methodNameMap = await _context.CrimpingMethodDicts
+                .AsNoTracking()
+                .Where(d => !d.IsDisabled && methodCodes.Contains(d.Code))
+                .ToDictionaryAsync(d => d.Code, d => d.Name);
+
+            // 3) 组装返回 DTO；若字典缺失则给兜底文案，避免前端空值
+            return terminals.Select(t => new TerminalSpecResponseDto
+            {
+                Id = t.Id,
+                MaterialCode = t.MaterialCode,
+                Name = t.Name,
+                Description = t.Description,
+                Method = t.Method,
+                MethodName = methodNameMap.TryGetValue(t.Method, out var methodName) ? methodName : $"方法{t.Method}",
+                IsDisabled = t.IsDisabled
+            }).ToList();
+        }
 
         public async Task<List<WireSpec>> GetWiresAsync()
             => await _context.WireSpecs

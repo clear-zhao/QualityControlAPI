@@ -48,6 +48,15 @@ namespace QualityControlAPI.Models
         [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
     }
 
+    [Table("CrimpingMethodDict")]
+    public class CrimpingMethodDict
+    {
+        [Key][Column("Code")] public int Code { get; set; }
+        [Column("Name")] public required string Name { get; set; }
+        [Column("SortOrder")] public int SortOrder { get; set; }
+        [Column("IsDisabled")] public bool IsDisabled { get; set; } = false;
+    }
+
     [Table("TerminalSpecs")]
     public class TerminalSpec
     {
@@ -58,6 +67,18 @@ namespace QualityControlAPI.Models
         [Column("Method")] public int Method { get; set; }
 
         [Column("IsDisabled")] public bool IsDisabled { get; set; } = false; // 新增：是否被禁用
+    }
+
+    // 端子规格返回 DTO：保留 method 编号，同时附带字典转换后的方法名称
+    public class TerminalSpecResponseDto
+    {
+        public int Id { get; set; }
+        public required string MaterialCode { get; set; }
+        public required string Name { get; set; }
+        public string? Description { get; set; }
+        public int Method { get; set; }
+        public required string MethodName { get; set; }
+        public bool IsDisabled { get; set; }
     }
 
     [Table("WireSpecs")]

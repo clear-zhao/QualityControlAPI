@@ -10,6 +10,7 @@ namespace QualityControlAPI.Data
         // 将实体映射到数据库表
         public DbSet<User> Users { get; set; }
         public DbSet<CrimpingTool> CrimpingTools { get; set; }
+        public DbSet<CrimpingMethodDict> CrimpingMethodDicts { get; set; }
         public DbSet<TerminalSpec> TerminalSpecs { get; set; }
         public DbSet<WireSpec> WireSpecs { get; set; }
         public DbSet<PullForceStandard> PullForceStandards { get; set; }
