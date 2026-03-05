@@ -103,6 +103,17 @@ CREATE TABLE TerminalSamples
     CONSTRAINT FK_Samples_Record FOREIGN KEY (InspectionRecordId) REFERENCES InspectionRecords (Id) ON DELETE CASCADE
 );
 
+  -- 9. 压接方法字典表
+  CREATE TABLE IF NOT EXISTS CrimpingMethodDict
+  (
+      Code       TINYINT      NOT NULL PRIMARY KEY,          -- 方法编码：后端传的 0/1/2/3/4...
+      Name       VARCHAR(50)  NOT NULL,                      -- 展示名称：坑压/模压/B型/...
+      SortOrder  INT          NOT NULL DEFAULT 0,
+      IsDisabled TINYINT      NOT NULL DEFAULT 0,            -- 0=启用,1=禁用
+      CreatedAt  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      UpdatedAt  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY UK_CrimpingMethodDict_Name (Name)
+  );
 
 -- =============================================
 -- 插入初始化数据
@@ -151,6 +162,17 @@ VALUES ('975236', '手动'),
        ('EM-6B2', '机器'),
        ('FEK-60EM', '机器');
 
+
+  -- 初始化已知方法（可按需改）
+  INSERT INTO CrimpingMethodDict (Code, Name, SortOrder, IsDisabled)
+  VALUES
+      (0, '坑压', 0, 0),
+      (1, '模压', 1, 0),
+      (2, 'B型', 2, 0)
+  ON DUPLICATE KEY UPDATE
+      Name = VALUES(Name),
+      SortOrder = VALUES(SortOrder),
+      IsDisabled = VALUES(IsDisabled);
 
 -- 插入端子规格 (TerminalSpecs)
 -- Method: 0=坑压, 1=模压
@@ -320,6 +342,17 @@ VALUES
     -- 120.0
     (1, 120.0, 3900);
 
+
+  -- 若历史数据里有新 method，自动补到字典（名称先占位）
+  INSERT INTO CrimpingMethodDict (Code, Name, SortOrder, IsDisabled)
+  SELECT t.Method, CONCAT('方法', t.Method), t.Method, 0
+  FROM (
+      SELECT DISTINCT Method FROM TerminalSpecs
+      UNION
+      SELECT DISTINCT Method FROM PullForceStandards
+  ) t
+  LEFT JOIN CrimpingMethodDict d ON d.Code = t.Method
+  WHERE d.Code IS NULL;
 
 -- =============================================
 -- 查询语句 (验证各表结构和基础数据是否正常)
